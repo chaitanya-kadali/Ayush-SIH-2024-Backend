@@ -1,0 +1,15 @@
+farmer {
+name
+district
+state (drop down)
+crop name
+phone number
+}
+
+doctor {
+name
+district
+state (drop down)
+university certification pdf
+phone number
+}
