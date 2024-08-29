@@ -4,6 +4,8 @@ district
 state (drop down)
 crop name
 phone number
+Email ID
+password
 }
 
 doctor {
@@ -12,4 +14,6 @@ district
 state (drop down)
 university certification pdf
 phone number
+Email ID
+password
 }
