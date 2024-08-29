@@ -1,0 +1,90 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+ 
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// MongoDB Connection
+mongoose.connect('mongodb://localhost:27017/meditationdb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+//user model
+const newUser=mongoose.Schema({
+    name:String,
+    email:String,
+    password:String,
+    age:Number
+});
+
+const User=mongoose.model("User",newUser);
+
+//Favourite session model
+const newFavSess=mongoose.Schema({
+    title:String,
+    duration:Number,      // ex time = 7min  2sec 
+    email:String          // storing time= 0702
+});
+
+const Favsess=mongoose.model("FavSess",newFavSess);
+
+
+
+
+// Routes
+app.get('/user_inf/:email', async (req, res) => {
+  const {email} = req.params; // front_info is taken from fornt_End
+  try {
+    const matched = await User.find({ "email": email });
+
+    res.status(200).json(matched);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.post('/user_inf', async (req, res) => {
+
+
+  const user_inf_int  = req.body;
+  const passwordh = user_inf_int.password;
+  
+  const user_inf = new User({ name,email,password,age });
+  try {
+    await user_inf.save();
+    res.status(201).json(user_inf);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post('/user_inf/favsess', async (req, res) => {
+  
+  const { title,duration,email} = req.body;
+  const favSess_inf = new Favsess({ title,duration, email });
+  try {
+    await favSess_inf.save();
+    res.status(201).json(favSess_inf);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
+
+
+
+
+
+// Server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
