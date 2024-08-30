@@ -6,26 +6,15 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
   
-  //user model
-  const Farmer=mongoose.Schema({
-      name:String,
-      phone_number:Number,
-      password:String,
-      district:String,
-      state:String,
-      crop_name:String,
-      language:String
-  });
-  
-  const farmer=mongoose.model("farmer",Farmer);
-  
-  //Favourite session model
+
+  //Doctor model
   const Doctor=mongoose.Schema({
     name:String,
     Email_ID:String,
@@ -84,6 +73,6 @@ app.post('/doctor-inf', async (req, res) => {
 
 
 
-app.listen(PORT, () =>{
+app.listen(PORT, () =>{ 
 console.log(`Server is running on port ${PORT}`);
 });
