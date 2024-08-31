@@ -1,16 +1,18 @@
 const Farmer = require("../models/farmerModel"); // object of farmer collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
+const bcrypt=require("bcryptjs");
+
 
 exports.createFarmer = catchAsyncErrors( async (req, res) => {
-  const info= req.body;
+  const {name,phone_number,password,district,state,crop_name,language}= req.body;
   
   try {
     // Hash the password
-    // const saltRounds = 10;
-    // const hashedPassword = await bcrypt.hash(info.password, saltRounds);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create new user instance with hashed password
-    const Farmer = new farmer(info);
+    const Farmer = new Farmer({name,phone_number,password:hashedPassword,district,state,crop_name,language});
 
     // Save the user to the databas
     await Farmer.save();
