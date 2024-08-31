@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+ 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -27,27 +27,9 @@ mongoose.connect('mongodb://localhost:27017/', {
   
   const doctor=mongoose.model("doctor",Doctor);
 
-// registration for Farmer
-app.post('/farmer-inf', async (req, res) => {
-  const info= req.body;
-  
-  try {
-    // Hash the password
-    // const saltRounds = 10;
-    // const hashedPassword = await bcrypt.hash(info.password, saltRounds);
-
-    // Create new user instance with hashed password
-    const Farmer = new farmer(info);
-
-    // Save the user to the databas
-    await Farmer.save();
-
-    res.status(201).json(Farmer);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
+// farmer reg and all here
+  const farmer = require("./routes/farmerRoute");
+app.use("/api",farmer);
 
 // registration for Doctor
 app.post('/doctor-inf', async (req, res) => {
