@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 //startup  model
- const StartupModel = mongoose.Schema({
+ const Startup = mongoose.Schema({
     companyName : String,
     address : String,
     city:String,
     pinCode:Number,
     state:String,
     district:String,
-    PANno:Number,
-    GSTno:Number,
+    PANno:String,
+    GSTno:String,
     websiteAddress:String,
     certificateNo:Number,
     dateOfIssue:String,
@@ -17,4 +17,4 @@ const mongoose = require("mongoose");
     IE_code:Number
  })
 
-module.exports = mongoose.model("startup",StartupModel);
+module.exports = mongoose.model("startup",Startup);

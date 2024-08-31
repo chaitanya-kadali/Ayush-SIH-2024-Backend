@@ -1,12 +1,12 @@
 const express = require("express");
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
-createFarmer,
-} = require("../controllers/farmerController");
+createStartUp,
+} = require("../controllers/startupController");
 
 const router = express.Router();
 
-// registration for Farmer
-router.route("/farmer-reg").post(asyncMiddleware(createFarmer)); 
+// registration for StartUp
+router.route("/startup-reg").post(asyncMiddleware(createStartUp)); 
 
 module.exports = router;

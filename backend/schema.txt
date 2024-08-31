@@ -1,0 +1,39 @@
+
+//farmer schema
+{
+    "name":"deva",
+    "phone_number":"8341662718",
+    "password":"deva@123",
+    "district":"east-godavari",
+    "state":"tamilNadu",
+    "crop_name":"rice",
+    "langauge":"marati"
+}
+
+//doctor schema
+{
+    "name":"deva",
+    Email_ID:"deva@123",
+    "password":"deva@123",
+    "district":"east-godavari",
+    "state":"tamilNadu",
+    "phone_number":"8341662718",
+    "langauge":"marati"
+}
+
+//startup schema
+{
+    "companyName":"saitech",
+    "address":"vasa samuel street,narsapur",
+    "city":"narsapur",
+    "pinCode":534275,
+    "state":"andhra",
+    "district":"godavari",
+    "PANno":"1D93H6RG3E8Y",
+    "GSTno":"8DDE63E9E3H3",
+    "websiteAddress":"www.saitech.com",
+    "certificateNo":864765,
+    "dateOfIssue":"10-1-2024",
+    "IssuingAuthority":"jksnfj",
+    "IE_code":783483
+}

@@ -12,12 +12,12 @@ exports.createFarmer = catchAsyncErrors( async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create new user instance with hashed password
-    const Farmer = new Farmer({name,phone_number,password:hashedPassword,district,state,crop_name,language});
+    const newFarmer = new Farmer({name,phone_number,password:hashedPassword,district,state,crop_name,language});
 
     // Save the user to the databas
-    await Farmer.save();
+    await newFarmer.save();
 
-    res.status(201).json(Farmer);
+    res.status(201).json(newFarmer);
   } catch (error) {
     console.error('Error:', error);
     res.status(400).json({ error: error.message });
