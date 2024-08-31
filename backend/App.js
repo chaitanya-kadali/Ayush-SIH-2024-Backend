@@ -13,11 +13,14 @@ app.use(bodyParser.json());
 
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/');
-  
+
 // farmer reg and all here
   const farmer = require("./routes/farmerRoute");
+  const doctor = require("./routes/doctorRoute");
+  const startup = require("./routes/startUpRoute");
 app.use("/api",farmer);
-
+app.use("/api",doctor);
+app.use("/api",startup);
 
 app.listen(PORT, () =>{ 
 console.log(`Server is running on port ${PORT}`);

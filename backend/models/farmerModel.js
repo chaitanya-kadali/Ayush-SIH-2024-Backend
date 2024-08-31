@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 //farmer model
- const Farmer = mongoose.Schema({
+ const Farmer = new mongoose.Schema({
       name:String,
       phone_number:Number,
       password:String,
