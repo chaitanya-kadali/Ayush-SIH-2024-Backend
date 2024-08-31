@@ -1,4 +1,5 @@
 const Farmer = require("../models/farmerModel"); // object of farmer collection
+const Cropname=require("../models/typesOfCrops"); //types of crops collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
 
@@ -7,7 +8,15 @@ exports.createFarmer = catchAsyncErrors( async (req, res) => {
   const {name,phone_number,password,district,state,crop_name,language}= req.body;
   
   try {
+
+    
+  const verify = await Cropname.findOne({ crop_name });
+  if(!verify){
+    const newCropname= new Cropname({crop_name});
+    await newCropname.save();
+  }
     // Hash the password
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
