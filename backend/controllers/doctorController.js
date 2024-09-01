@@ -1,4 +1,5 @@
 const Doctor = require("../models/doctormodel"); // object of doctor collection
+const Startup = require("../models/startupModel");// object of startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
 
@@ -50,4 +51,26 @@ exports.createDoctor = catchAsyncErrors( async (req, res) => {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
      }
-  })
+  });
+
+  //Doctor Dashboard
+
+  exports.DoctorDashboard =catchAsyncErrors(async (req,res)=>{
+    const { District} = req.body;
+    try {
+    // Check if startups exists in the database
+    const StartupsAvai = await Startup.find({District});
+  
+    if (!StartupsAvai) {
+
+  
+    return res.status(404).json({ success: false, error: 'No Startups Available.' });
+  
+    }
+  
+    res.json({ success: true, message: 'Startup Details for doctor', StartupsAvai: StartupsAvai});
+    } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+     }
+  });

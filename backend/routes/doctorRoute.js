@@ -1,7 +1,9 @@
 const express = require("express");
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
-createDoctor,DoctorLogin
+createDoctor,
+DoctorLogin,
+DoctorDashboard
 } = require("../controllers/doctorController");
 
 const router = express.Router();
@@ -10,5 +12,7 @@ const router = express.Router();
 router.route("/doctor-reg").post(asyncMiddleware(createDoctor)); 
 //login for doctor
 router.route("/doctor-login").post(asyncMiddleware(DoctorLogin)); 
+//Doctor Dashboard
+router.route("/doctor").post(asyncMiddleware(DoctorDashboard));
 
 module.exports = router;
