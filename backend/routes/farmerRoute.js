@@ -2,14 +2,19 @@ const express = require("express");
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
 createFarmer,
-FarmerLogin
+FarmerLogin,
+FarmerDashboard
 } = require("../controllers/farmerController");
 
 const router = express.Router();
 
-// registration for Farmer
+// Registration for Farmer
 router.route("/farmer-reg").post(asyncMiddleware(createFarmer)); 
-//login for farmer
+
+//Login for Farmer
 router.route("/farmer-login").post(asyncMiddleware(FarmerLogin)); 
+
+//Dashboard for Farmer
+router.route("/farmer").post(asyncMiddleware(FarmerDashboard));
 
 module.exports = router;
