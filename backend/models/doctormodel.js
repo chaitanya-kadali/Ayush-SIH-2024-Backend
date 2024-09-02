@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
       district:String,
       state:String,
       phone_number:Number,
-      language:String
+  // no need of language
   });
 
 module.exports = mongoose.model("doctor",Doctor);

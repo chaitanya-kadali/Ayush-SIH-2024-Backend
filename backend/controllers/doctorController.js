@@ -18,10 +18,10 @@ exports.createDoctor = catchAsyncErrors( async (req, res) => {
       // Save the user to the database
       await newDoctor.save();
   
-      res.status(201).json(newDoctor);
+      res.status(201).json({data:newDoctor, success: true}); // modified to match frontend
     } catch (error) {
       console.error('Error:', error);
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message,success: false });
     }
   });
 
