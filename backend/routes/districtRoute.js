@@ -2,6 +2,8 @@ const express = require("express");
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const fs = require('fs');
 const path = require('path');
+
+// reading the states whole json file
 const statesData = JSON.parse(fs.readFileSync(path.join(__dirname, 'district_list.json'), 'utf-8'));
 
 const fetchDistricts = async (req, res) => {

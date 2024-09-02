@@ -21,7 +21,10 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
   const doctor = require("./routes/doctorRoute");
   const startup = require("./routes/startUpRoute");
   const drugInspector = require("./routes/drugInspectorRoute");
+
+// importing apis
   const chat = require("./routes/chatRoute");
+  const district = require("./routes/districtRoute")
 
 // assigning the persons
   app.use("/api",drugInspector);
@@ -31,6 +34,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
 
 // assigning the apis
 app.use("/api",chat);
+app.use("/api",district);
 
 
 app.listen(process.env.PORT, () =>{ 
