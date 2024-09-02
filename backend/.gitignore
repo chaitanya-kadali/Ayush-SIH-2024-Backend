@@ -1,3 +1,13 @@
 /node_modules
 ./node_modules
 node_modules
+
+/.env
+./.env
+.env
+
+/dotenv
+./dotenv
+dotenv
+
+backend/.env
