@@ -6,7 +6,7 @@ const mongoose=require('mongoose');
 require('dotenv').config(); // to access the values .env file
 
 const app = express();
-
+ 
 // Middleware
 app.use(express.json());
 app.use(bodyParser.json());
