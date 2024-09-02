@@ -14,9 +14,11 @@ const mongoose = require("mongoose");
     GSTno:String,
     websiteAddress:String,
     certificateNo:Number,
-    dateOfIssue:String,
+    CompanyDOI:String,
     IssuuingAuthority:String,
-    IE_code:Number
+    IE_code:Number,
+    IE_DOI:String
+
  })
 
 module.exports = mongoose.model("startup",Startup);

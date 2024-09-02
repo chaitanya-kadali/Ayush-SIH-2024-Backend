@@ -30,10 +30,6 @@ app.use("/api",chat);
  
 app.use("/api",doctor);
 app.use("/api",startup);
-app.use("/api/dashboard",farmer);
-app.use("/api/dashboard",doctor);
-app.use("/api/dashboard",startup);
-app.use("/api/dashboard",drugInspector);
 
 
 app.listen(process.env.PORT, () =>{ 
