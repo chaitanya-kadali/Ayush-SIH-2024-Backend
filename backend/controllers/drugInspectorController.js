@@ -1,30 +1,7 @@
 const Druginspector = require("../models/drugInspectorModel");// object of drugInspector collection
+const Startup=require("../models/startupModel");  //object of Startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
-
-
-
-//registration for Doctor
-exports.createDrugInspector = catchAsyncErrors( async (req, res) => {
-    const {Email_ID,password}= req.body;
-    
-    try {
-      // Hash the password
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-  
-      // Create new user instance with hashed password
-      const newDrugInspector = new Druginspector({Email_ID,password:hashedPassword});
-  
-      // Save the user to the database
-      await newDrugInspector.save();
-  
-      res.status(201).json(newDrugInspector);
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(400).json({ error: error.message });
-    }
-  });
 
 
   //login for DrugInspector
@@ -53,3 +30,24 @@ exports.createDrugInspector = catchAsyncErrors( async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal server error' });
      }
   });
+
+    //Dashboard for Drug Inspector
+    exports.DrugInspectorDashboard =catchAsyncErrors(async (req,res)=>{
+      const { District} = req.body;
+      try {
+      // Check if user exists in the database
+      const StartupsAvai = await Startup.find({District});
+    
+      if (!StartupsAvai) {
+      // User not found, send error response
+    
+      return res.status(404).json({ success: false, error: 'No Startups Available.' });
+    
+      }
+    
+      res.json({ success: true, message: 'Startup Details for DrugInspector', StartupsAvai: StartupsAvai });
+      } catch (error) {
+      console.error('Error during login:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+       }
+    });
