@@ -15,6 +15,6 @@ router.route("/farmer-reg").post(asyncMiddleware(createFarmer));
 router.route("/farmer-login").post(asyncMiddleware(FarmerLogin)); 
 
 //Dashboard for Farmer
-router.route("/farmer").post(asyncMiddleware(FarmerDashboard));
+router.route("/dashboard-farmer").post(asyncMiddleware(FarmerDashboard));
 
 module.exports = router;
