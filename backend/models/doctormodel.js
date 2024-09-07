@@ -8,7 +8,6 @@ const mongoose = require("mongoose");
       district:String,
       state:String,
       phone_number:Number,
-
       language:String,
       pdf:{
         type:String,

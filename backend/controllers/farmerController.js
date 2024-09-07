@@ -1,8 +1,9 @@
 const Farmer = require("../models/farmerModel");   // object of farmer collection
 const Startup = require("../models/startupModel"); // object of startup collection
-const Cropname=require("../models/typesOfCrops"); //types of crops collection
+const Cropname=require("../models/typesOfCrops");  //types of crops collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
+
 
 //Registration for Farmer
 exports.createFarmer = catchAsyncErrors( async (req, res) => {

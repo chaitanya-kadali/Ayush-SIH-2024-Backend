@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose=require('mongoose');
+// require('dotenv').config(); // to access the values .env file
+const PORT=5002;
 require('dotenv').config(); // to access the values .env file
 
 const app = express();
