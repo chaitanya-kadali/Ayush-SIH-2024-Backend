@@ -9,16 +9,7 @@ const mongoose = require("mongoose");
     city:String,
     pinCode:Number,
     state:String,
-    district:String,
-    PANno:String,
-    GSTno:String,
-    websiteAddress:String,
-    certificateNo:Number,
-    CompanyDOI:String,
-    IssuuingAuthority:String,
-    IE_code:Number,
-    IE_DOI:String
-
+    district:String
  })
 
 module.exports = mongoose.model("startup",Startup);
