@@ -68,9 +68,7 @@ exports.FarmerLogin =catchAsyncErrors(async (req,res)=>{
   
     if (!StartupsAvai) {
     // User not found, send error response
-  
     return res.status(404).json({ success: false, error: 'No Startups Available.' });
-  
     }
   
     res.json({ success: true, message: 'Startup Details for farmer', StartupsAvai: StartupsAvai });

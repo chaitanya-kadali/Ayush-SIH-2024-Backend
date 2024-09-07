@@ -25,6 +25,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
 // importing apis
   const chat = require("./routes/chatRoute");
   const district = require("./routes/districtRoute")
+  const sendEmail  = require("./routes/sendEmailRoute")
 
 // assigning the persons
   app.use("/api",drugInspector);
@@ -35,6 +36,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
 // assigning the apis
 app.use("/api",chat);
 app.use("/api",district);
+app.use("/api",sendEmail);
 
 
 app.listen(process.env.PORT, () =>{ 

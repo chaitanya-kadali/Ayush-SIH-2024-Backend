@@ -5,7 +5,7 @@ chatControl,
 
 const router = express.Router();
 
-// registration for Farmer
+// chat route
 router.route("/chat").post(chatControl); 
 
 module.exports = router;
