@@ -13,7 +13,9 @@ const mongoose = require("mongoose");
         type:String,
         required:true
       }
+
   // no need of language
+
   });
 
 module.exports = mongoose.model("doctor",Doctor);
