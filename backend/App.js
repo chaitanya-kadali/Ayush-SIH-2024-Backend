@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose=require('mongoose');
 // require('dotenv').config(); // to access the values .env file
-const PORT=5000;
+const PORT=5002;
 const app = express();
  
 // Middleware

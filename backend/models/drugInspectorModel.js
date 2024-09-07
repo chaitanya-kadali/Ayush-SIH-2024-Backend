@@ -2,10 +2,10 @@ const mongoose=require('mongoose');
 
 const drupInspectorSchema=mongoose.Schema({
     name:String,
-    State:String,
-    District:String,
     Email_ID:String,
     password:String,
+    State:String,
+    district:String,
     Notification:String
 });
 
