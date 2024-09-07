@@ -1,5 +1,4 @@
 const express = require('express');
-const axios = require('axios');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose=require('mongoose');
@@ -17,19 +16,25 @@ app.use(bodyParser.json());
 // MongoDB Connection
 mongoose.connect('mongodb://localhost:27017/aayushdb');
 
-// farmer reg and all here
+// importings of persons
   const farmer = require("./routes/farmerRoute");
   const doctor = require("./routes/doctorRoute");
   const startup = require("./routes/startUpRoute");
   const drugInspector = require("./routes/drugInspectorRoute");
-app.use("/api",drugInspector);
-app.use("/api",farmer);
 
-const chat = require("./routes/chatRoute");
+// importing apis
+  const chat = require("./routes/chatRoute");
+  const district = require("./routes/districtRoute")
+
+// assigning the persons
+  app.use("/api",drugInspector);
+  app.use("/api",farmer);
+  app.use("/api",doctor);
+  app.use("/api",startup);
+
+// assigning the apis
 app.use("/api",chat);
- 
-app.use("/api",doctor);
-app.use("/api",startup);
+app.use("/api",district);
 
 
 app.listen(PORT, () =>{ 

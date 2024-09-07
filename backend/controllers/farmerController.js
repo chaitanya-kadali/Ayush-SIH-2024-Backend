@@ -8,7 +8,7 @@ const bcrypt=require("bcryptjs");
 exports.createFarmer = catchAsyncErrors( async (req, res) => {
   const {name,phone_number,password,district,state,crop_name,language}= req.body;
 
-  try {
+  try { 
 
   const verify = await Cropname.findOne({ crop_name });
   if(!verify){
@@ -25,12 +25,11 @@ exports.createFarmer = catchAsyncErrors( async (req, res) => {
 
     // Save the user to the database
     await newFarmer.save();
-
-    res.status(201).json(newFarmer);
-  } catch (error) {
+    res.status(201).json({data:newDoctor, success: true}); // modified to match frontend
+} catch (error) {
     console.error('Error:', error);
-    res.status(400).json({ error: error.message });
-  }
+    res.status(400).json({ error: error.message,success: false });
+}
 });
 
 
