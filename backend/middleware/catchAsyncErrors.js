@@ -1,3 +1,5 @@
-module.exports = (theFunc) => (req, res, next) => {
-  Promise.resolve(theFunc(req, res, next)).catch(next);
+const catchAsyncErrors = (TheFun) => (req, res, next) => {
+  Promise.resolve(TheFun(req, res, next)).catch(next);
 };
+
+module.exports = catchAsyncErrors;

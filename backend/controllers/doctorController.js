@@ -2,22 +2,67 @@ const Doctor = require("../models/doctormodel"); // object of doctor collection
 const Startup = require("../models/startupModel");// object of startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
+const express=require('express');
 
-//registration for Doctor
-exports.createDoctor = catchAsyncErrors( async (req, res) => {
-    const {name,Email_ID,password,district,state,phone_number,language}= req.body;
-    
+const app=express();
+
+
+const multer = require("multer");
+
+// Configure Multer to save files to the server
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./files");  // Set the directory where you want to save the files
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Registration for doctor
+exports.createDoctor = 
+  catchAsyncErrors(async (req, res) => {
+
+    const uploadMiddleware = upload.single('pdf');
+
+  // Invoke the multer middleware manually
+  uploadMiddleware(req, res, async (err) => {
+    if (err) {
+      return res.status(500).send(err.message);
+    }
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+
+    const { name, Email_ID, password, district, state, phone_number, language } = req.body;
+
     try {
       // Hash the password
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
-  
-      // Create new user instance with hashed password
-      const newDoctor = new Doctor({name,Email_ID,password:hashedPassword,district,state,phone_number,language});
-  
-      // Save the user to the database
+
+      // Get the file path of the uploaded PDF
+      const pdfFilePath = req.file.path;
+
+      // Create a new doctor with the uploaded PDF's file path
+      const newDoctor = new Doctor({
+        name,
+        Email_ID,
+        password: hashedPassword,
+        district,
+        state,
+        phone_number,
+        language,
+        pdf: pdfFilePath
+      }
+    );
+
+      // Save the doctor to the database
       await newDoctor.save();
-  
+
       res.status(201).json(newDoctor);
     } catch (error) {
       console.error('Error:', error);
@@ -25,6 +70,7 @@ exports.createDoctor = catchAsyncErrors( async (req, res) => {
     }
   });
 
+  });
 
   //login for doctor
 
@@ -74,3 +120,4 @@ exports.createDoctor = catchAsyncErrors( async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal server error' });
      }
   });
+
