@@ -27,9 +27,10 @@ router.route("/startupf-dashboard").post(asyncMiddleware(StartupF_Dashboard));
 //dashboard for startup doctor
 router.route("/startupd-dashboard").post(asyncMiddleware(StartupD_Dashboard)); 
 
-//dashboard for startup doctor
+//dashboard for StartupFeedback post
 router.route("/StartupFeedback-post").post(asyncMiddleware(StartupFeedback_upload));
 
-//dashboard for startup doctor
+//dashboard for StartupFeedback get
 router.route("/StartupFeedback-get").post(asyncMiddleware(StartupFeedback_Get));
+
 module.exports = router;

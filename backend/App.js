@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose=require('mongoose');
 // require('dotenv').config(); // to access the values .env file
-const PORT=5002;
+// const PORT=5002;
 require('dotenv').config(); // to access the values .env file
 
 const app = express();
@@ -27,7 +27,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
 // importing apis
   const chat = require("./routes/chatRoute");
   const district = require("./routes/districtRoute")
-  const sendEmail  = require("./routes/sendEmailRoute")
+  const sendEmail = require("./routes/sendEmailRoute")
 
 // assigning the persons
   app.use("/api",drugInspector);

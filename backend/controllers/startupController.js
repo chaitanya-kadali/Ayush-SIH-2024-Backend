@@ -170,7 +170,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
 // Uploading Feedback from DrugInspector into Database
 exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
   const { Email, feedback } = req.body;
-
+  
   try {
 
     // Find the startup by email

@@ -17,12 +17,12 @@ router.route("/drugInspector-login").post(asyncMiddleware(drugInspectorLogin));
 //Dashboard for drugInspector
 router.route("/drugInspector-dashboard").post(asyncMiddleware(DrugInspectorDashboard));
 
-//Dashboard for I-Notificationpos
+//Dashboard for I-Notificationpost
 router.route("/DI-Notificationpost").post(asyncMiddleware(DINotificationpost));
 
 //Dashboard for DI-NotificationSendingStartups
 router.route("/DI-NotificationSendingStartups").post(asyncMiddleware(DINotificationSendingStartups));
 
-//Dashboard for DI-NotificationSendingStartups
+//Dashboard for DI-NotificationGet
 router.route("/DI-NotificationGet").post(asyncMiddleware(DI_NotificationGet));
 module.exports = router;

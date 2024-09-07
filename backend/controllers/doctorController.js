@@ -19,12 +19,11 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
   }
 });
-
 const upload = multer({ storage: storage });
 
+
 // Registration for doctor
-exports.createDoctor = 
-  catchAsyncErrors(async (req, res) => {
+exports.createDoctor = catchAsyncErrors(async (req, res) => {
 
     const uploadMiddleware = upload.single('pdf');
 
@@ -74,16 +73,16 @@ exports.createDoctor =
 
   });
 
-  //login for doctor
 
+  //Login for doctor
   exports.DoctorLogin =catchAsyncErrors(async (req,res)=>{
     const { Email_ID, password } = req.body;
     try {
-    // Check if user exists in the database
+    // Check if Doctor exists in the database
     const DoctorDetails = await Doctor.findOne({ Email_ID });
 
     if (!DoctorDetails) {
-    // User not found, send error response
+    // Doctor Details not found, send error response
   
     return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
   
@@ -101,8 +100,8 @@ exports.createDoctor =
      }
   });
 
-  //Doctor Dashboard
 
+  //Doctor Dashboard
   exports.DoctorDashboard =catchAsyncErrors(async (req,res)=>{
     const { District} = req.body;
     try {
@@ -111,7 +110,6 @@ exports.createDoctor =
   
     if (!StartupsAvai) {
 
-  
     return res.status(404).json({ success: false, error: 'No Startups Available.' });
   
     }

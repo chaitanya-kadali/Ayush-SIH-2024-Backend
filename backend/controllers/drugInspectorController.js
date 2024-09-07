@@ -6,15 +6,14 @@ const bcrypt=require("bcryptjs");
 
 
   //login for DrugInspector
-
   exports.drugInspectorLogin =catchAsyncErrors(async (req,res)=>{
     const { Email_ID, password } = req.body;
     try {
-    // Check if user exists in the database
+    // Check if DruginspectorDetails exists in the database
     const DruginspectorDetails = await Druginspector.findOne({ Email_ID });
     
     if (!DruginspectorDetails) {
-    // User not found, send error response
+    // DruginspectorDetails not found, send error response
     
     return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
     
@@ -25,7 +24,7 @@ const bcrypt=require("bcryptjs");
     // Passwords don't match, send error response
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
-    res.json({ success: true, message: 'Login successful', DruginspectorDetails: DruginspectorDetails });
+    res.status(200).json({ success: true, message: 'Login successful', DruginspectorDetails: DruginspectorDetails });
     } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -36,17 +35,17 @@ const bcrypt=require("bcryptjs");
     exports.DrugInspectorDashboard =catchAsyncErrors(async (req,res)=>{
       const { District} = req.body;
       try {
-      // Check if user exists in the database
+      // Check if StartupsAvailable exists in the database
       const StartupsAvai = await Startup.find({District});
     
       if (!StartupsAvai) {
-      // User not found, send error response
+      // StartupsAvailable not found, send error response
     
       return res.status(404).json({ success: false, error: 'No Startups Available.' });
       
       }
     
-      res.json({ success: true, message: 'Startup Details for DrugInspector', StartupsAvai: StartupsAvai });
+      res.status(200).json({ success: true, message: 'Startup Details for DrugInspector', StartupsAvai: StartupsAvai });
       } catch (error) {
       console.error('Error during login:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
