@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
   }
 });
 
+
 const upload = multer({ storage: storage });
+
 
 //Registration for the start up
 exports.createStartUp = catchAsyncErrors( async (req, res) => {
@@ -42,7 +44,6 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
 });
 
 //login for Startup
-
 
   exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
     const { Email_ID, password } = req.body;
@@ -89,7 +90,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
         return res.status(400).send('Both PDF files must be uploaded.');
       }
 
-      const { PANno,GSTno,websiteAddress,certificateNo,CompanyDOI,IssuuingAuthority,IE_code,IE_DOI } = req.body;
+      const { Email, PANno, GSTno, websiteAddress, certificateNo, CompanyDOI, IssuuingAuthority, IE_code, IE_DOI ,feedback} = req.body;
 
       try {
 
@@ -97,8 +98,9 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
         const pdf1FilePath = req.files['pdf1'][0].path;
         const pdf2FilePath = req.files['pdf2'][0].path;
 
-        // Create a new doctor with the uploaded PDFs' file paths
+        // Create a new Startup DashBoard model with the uploaded PDFs' file paths
         const newStartupdashModel = new StartupdashModel({
+          Email,
           PANno,
           GSTno,
           websiteAddress,
@@ -108,10 +110,11 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
           IE_code,
           IE_DOI,
           pdf1: pdf1FilePath,
-          pdf2: pdf2FilePath
+          pdf2: pdf2FilePath,
+          feedback
         });
 
-        // Save the doctor to the database
+        // Save the StartupDashBoard to the database
         await newStartupdashModel.save();
 
         res.status(201).json(newStartupdashModel);
@@ -120,7 +123,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
         res.status(400).json({ error: error.message });
       }
     });
-  })
+  });
 
   //DashBoard for Startup-farmer
     exports.StartupF_Dashboard =catchAsyncErrors(async (req,res)=>{
@@ -164,3 +167,55 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
          }
       });
   
+// Uploading Feedback from DrugInspector into Database
+exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
+  const { Email, feedback } = req.body;
+  
+  try {
+
+    // Find the startup by email
+    const StartUp = await StartupdashModel.findOne({ Email });
+
+    // Check if the startup exists
+    if (!StartUp) {
+      return res.status(404).json({ success: false, message: 'Startup not found' });
+    }
+
+    // Update the feedback field
+    if(StartUp.feedback){
+      StartUp.feedback=StartUp.feedback+"\n"+feedback;
+    }else{
+      StartUp.feedback=feedback;
+    }
+
+    // Save the updated startup to the database
+    await StartUp.save();
+
+    // Return a success response
+    res.status(200).json({ success: true, message: 'Feedback updated successfully', data: StartUp });
+  } catch (error) {
+    console.error('Error during feedback update:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Uploading Feedback from DrugInspector into Database
+exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
+  const { Email } = req.body;
+
+  try {
+    // Find the startup by email
+    const StartUp = await StartupdashModel.findOne({ Email });
+
+    // Check if the startup exists
+    if (!StartUp) {
+      return res.status(404).json({ success: false, message: 'Startup not found' });
+    }
+
+    // Return a success response
+    res.status(200).json({ success: true, message: 'Startup found ', data: StartUp.feedback });
+  } catch (error) {
+    console.error('Error during feedback update:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
