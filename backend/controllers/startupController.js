@@ -25,21 +25,21 @@ const upload = multer({ storage: storage });
 //Registration for the start up
 exports.createStartUp = catchAsyncErrors( async (req, res) => {
   const {Email_ID,password,companyName,address ,city,pinCode,
-    state,district}=req.body;
+    state,district,phone_number}=req.body;
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     // Create new user instance with hashed password
     const NewstartUp = new Startup({Email_ID,password:hashedPassword,companyName,address ,city,pinCode,
-      state,district});
+      state,district,phone_number});
 
     // Save the user to the database
     await NewstartUp.save();
 
-    res.status(201).json(NewstartUp);
+    res.status(201).json({data:NewstartUp, success:true});
   } catch (error) {
     console.error('Error:', error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message , success:false});
   }
 });
 
