@@ -2,74 +2,95 @@ const Druginspector = require("../models/drugInspectorModel");// object of drugI
 const Startup=require("../models/startupModel");  //object of Startup collection
 const DI_Notification=require("../models/DI_Notification");  //object of DI_Notification collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-const bcrypt=require("bcryptjs");
+
 
 const multer = require("multer");
+const path = require("path"); // Used to get file extensions
+const fs = require("fs"); // Required for file handling (if needed)
+const bcrypt = require("bcryptjs");
 
-// Configure Multer to save files to the server
+
+// Configure Multer with file type and size restrictions
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./files");  // Set the directory where you want to save the files
+    cb(null, "./files"); // Set the directory where you want to save the files
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
+    cb(null, uniqueSuffix + '-' + file.originalname); // Set the file name to save
   }
 });
-const upload = multer({ storage: storage });
+
+// File validation: Limit to PDF and file size
+const fileFilter = (req, file, cb) => {
+  // Only accept PDF files
+  const fileType = file.mimetype;
+  if (fileType === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type. Only PDF files are allowed."), false);
+  }
+};
+
+// Set file size limit to 5MB
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 5 } // 5MB file size limit
+});
 
 
-// Registration for Druginspector
+// Registration for Drug Inspector
 exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
-
-    const uploadMiddleware = upload.single('OrderPdfCopy');
+  // Multer middleware for handling single file upload
+  const uploadMiddleware = upload.single('OrderPdfCopy');
 
   // Invoke the multer middleware manually
   uploadMiddleware(req, res, async (err) => {
     if (err) {
-      return res.status(500).send(err.message);
+      return res.status(500).send(err.message); // Multer-related error
     }
     if (!req.file) {
-      return res.status(400).send('No file uploaded.');
+      return res.status(400).send('No file uploaded.'); // No file uploaded error
     }
 
-    const { name, Email_ID, password,mobile_no,designation,Qualification,orderReferenceNo,OrderDate,State,district} = req.body;
+    // Extract form data
+    const { name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district } = req.body;
 
     try {
-      // Hash the password
+      // Hash the password for security
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Get the file path of the uploaded PDF
       const pdfFilePath = req.file.path;
 
-      // Create a new Druginspector with the uploaded PDF's file path
+      // Create a new Drug Inspector with the uploaded PDF's file path
       const newDruginspector = new Druginspector({
         name, 
         Email_ID, 
-        password:hashedPassword,
+        password: hashedPassword,
         mobile_no,
         designation,
         Qualification,
         orderReferenceNo,
         OrderDate,
-        OrderPdfCopy:pdfFilePath,
+        OrderPdfCopy: pdfFilePath,
         State,
         district
-      }
-    );
+      });
 
-      // Save the drugInspector to the database
+      // Save the Drug Inspector to the database
       await newDruginspector.save();
-  
-      res.status(201).json({data:newDruginspector, success: true}); 
+
+      res.status(201).json({ data: newDruginspector, success: true });
     } catch (error) {
       console.error('Error:', error);
-      res.status(400).json({ error: error.message,success: false });
+      res.status(400).json({ error: error.message, success: false });
     }
   });
+});
 
-  });
 
 
   //login for DrugInspector
@@ -163,10 +184,11 @@ exports.DINotificationpost = catchAsyncErrors(async (req, res) => {
   }
 });
 
+
 // Function to return startups for a given Drug Inspector
 exports.DINotificationSendingStartups = catchAsyncErrors(async (req, res) => {
   const { Email_ID } = req.body; // Extract Drug Inspector email from the request body
-
+  
   try {
     // Find all notifications where the DI_Email matches the provided email
     const notifications = await DI_Notification.find({ Email_ID });

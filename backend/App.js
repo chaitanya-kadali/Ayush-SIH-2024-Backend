@@ -15,8 +15,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(bodyParser.json());
 
-// MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/aayushdb');
+// MongoDB Atlas Connection
+const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
+
+if (!mongoUri) {
+    console.error('MongoDB URI not defined in .env file.');
+    process.exit(1);
+}
+
+mongoose.connect(mongoUri)
+.then(() => {
+    console.log('Connected to MongoDB Atlas!');
+})
+.catch((error) => {
+    console.error('Error connecting to MongoDB Atlas:', error);
+});
 
 // importings of persons
   const farmer = require("./routes/farmerRoute");
