@@ -135,7 +135,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
       if (!FarmersAvai) {
       // User not found, send error response
     
-      return res.status(404).json({ success: false, error: 'No Startups Available.' });
+      return res.status(404).json({ success: false, error: 'No Farmers Available.' });
     
       }
       

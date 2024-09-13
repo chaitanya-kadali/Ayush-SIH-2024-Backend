@@ -9,9 +9,11 @@ DoctorDashboard
 const router = express.Router();
 
 // registration for Doctor
-router.route("/doctor-reg").post(asyncMiddleware(createDoctor)); 
+router.route("/doctor-reg").post(asyncMiddleware(createDoctor));
+
 //login for doctor
 router.route("/doctor-login").post(asyncMiddleware(DoctorLogin)); 
+
 //Doctor Dashboard
 router.route("/doctor-dashboard").post(asyncMiddleware(DoctorDashboard));
 

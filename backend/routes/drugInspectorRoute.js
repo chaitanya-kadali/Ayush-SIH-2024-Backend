@@ -2,6 +2,7 @@ const express = require("express");
 
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
+    createDrugInspector,
     drugInspectorLogin,
     DrugInspectorDashboard,
     DINotificationpost,
@@ -10,6 +11,9 @@ const {
 } = require("../controllers/drugInspectorController");
 
 const router = express.Router();
+
+//registration for DrugInspector
+router.route("/drugInspector-reg").post(asyncMiddleware(createDrugInspector));
 
 //Login for drugInspector
 router.route("/drugInspector-login").post(asyncMiddleware(drugInspectorLogin));

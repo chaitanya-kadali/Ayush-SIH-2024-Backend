@@ -21,12 +21,12 @@ exports.createFarmer = catchAsyncErrors( async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Create new user instance with hashed password
+    // Create newFarmer instance with hashed password
     const newFarmer = new Farmer({name,phone_number,password:hashedPassword,district,state,crop_name,language});
 
-    // Save the user to the database
+    // Save the newFarmer to the database
     await newFarmer.save();
-    res.status(201).json({data:newDoctor, success: true}); // modified to match frontend
+    res.status(201).json({data:newFarmer, success: true}); // modified to match frontend
 } catch (error) {
     console.error('Error:', error);
     res.status(400).json({ error: error.message,success: false });
@@ -53,7 +53,7 @@ exports.FarmerLogin =catchAsyncErrors(async (req,res)=>{
   // Passwords don't match, send error response
   return res.status(403).json({ success: false, error: 'Invalid phone_number or password.' });
   }
-  res.json({ success: true, message: 'Login successful', FarmerDetails: FarmerDetails });
+  res.status(201).json({ success: true, message: 'Login successful', FarmerDetails: FarmerDetails });
   } catch (error) {
   console.error('Error during login:', error);
   res.status(500).json({ success: false, error: 'Internal server error' });
@@ -72,7 +72,7 @@ exports.FarmerLogin =catchAsyncErrors(async (req,res)=>{
     return res.status(404).json({ success: false, error: 'No Startups Available.' });
     }
   
-    res.json({ success: true, message: 'Startup Details for farmer', StartupsAvai: StartupsAvai });
+    res.status(201).json({ success: true, message: 'Startup Details for farmer', StartupsAvai: StartupsAvai });
     } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });

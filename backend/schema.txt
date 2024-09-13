@@ -1,39 +1,80 @@
+//these are the models that are used in raw data in post man
 
-//farmer schema
+//Drug Inspector notification details
+
 {
-    "name":"deva",
-    "phone_number":"8341662718",
-    "password":"deva@123",
-    "district":"east-godavari",
-    "state":"tamilNadu",
-    "crop_name":"rice",
-    "langauge":"marati"
+    DI_Email:sai@gmail.com,
+    Startup_Email:saiv@123,
+    Startup_Company:saitech,
+    notification:this is from saitech company please check my company liscense,
+    date:02-04-2005
 }
 
-//doctor schema
+//drug Inspector model
 {
-    "name":"deva",
-    Email_ID:"deva@123",
-    "password":"deva@123",
-    "district":"east-godavari",
-    "state":"tamilNadu",
-    "phone_number":"8341662718",
-    "langauge":"marati"
+    name:sai,
+    Email_ID:sai@gmail.com,,
+    password:sai@123,
+    State:andhra,
+    district:godavari,
+    Notification:please check my saitech company
 }
 
-//startup schema
+//Farmer model
 {
-    "companyName":"saitech",
-    "address":"vasa samuel street,narsapur",
-    "city":"narsapur",
-    "pinCode":534275,
-    "state":"andhra",
-    "district":"godavari",
-    "PANno":"1D93H6RG3E8Y",
-    "GSTno":"8DDE63E9E3H3",
-    "websiteAddress":"www.saitech.com",
-    "certificateNo":864765,
-    "dateOfIssue":"10-1-2024",
-    "IssuingAuthority":"jksnfj",
-    "IE_code":783483
+    name:sai,
+      phone_number:8803434888,
+      password:sai@123,
+      district:godavari,
+      state:andhra,
+      crop_name:paddy,
+      language:telugu
+}
+
+//Startup model
+{
+    Email_ID:sai@gmail.com,,
+   password:sai@123,
+    companyName : saitech,
+    address : 10-1-2,vasa street,narsapuram,godavari,andhra,
+    city:narsapuram,
+    pinCode:534275,
+    state:andhra,
+    district:godavari
+}
+
+//types of crops model
+{
+    crop_name:paddy
+}
+
+//these are the models that are used in form data in post man
+
+
+//Startup Dashboard model
+{
+    Email:sai@gmail.com,
+    PANno:3YE83H894GF,
+    GSTno:BF8E84T38R8,
+    websiteAddress:www.saitech.com,
+    certificateNo:Number,
+    CompanyDOI:02-06-2005,
+    IssuuingAuthority:saisaisai,
+    IE_code:83648374,
+    IE_DOI:02-05-2005,
+    pdf1:upload pdf in form-data{type=file},
+    pdf2:upload pdf in form-data{type=file}
+    feedback:there are no issues in your pdf's
+}
+
+//doctor model
+{
+       name:sai,
+      Email_ID:sai@gmail.com,
+      password:sai@123,
+      district:west godavari,
+      state:andhra,
+      phone_number:8803434888,
+      language:telugu,
+      pdf:upload pdf in form-data{type=file}
 }
