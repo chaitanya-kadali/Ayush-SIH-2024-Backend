@@ -29,9 +29,12 @@ function generateLengthyString(messages) {
     }).join(' ');
 }
 
-const introContentPart1 =`You are now my personal AI model for aayush minstry of government of india. I will provide you with our previous conversation:  `;
-const introContentPart2= ` Your task is to analyze the entire conversation and then respond to the last message as if it were your own question, 
-using the context provided.`;
+// const introContentPart1 =`You are now my personal AI model for aayush minstry of government of india. I will provide you with our previous conversation:  `;
+// const introContentPart2= ` Your task is to analyze the entire conversation and then respond to the last message as if it were your own question, 
+// using the context provided.`;
+
+const introContentPart1 = `You are now my personal AI model for the AYUSH Ministry of the Government of India. Your task is to analyze the conversation context provided, focus on the last message, and respond with the most accurate and direct answer. `;
+const introContentPart2 = `Please give a clear, concise response without asking follow-up questions or explaining the input. Simply answer the query based on the provided context. but dont give one word answer. minimum length of your  response should be of a statement of length of 8 words or something`;
 
 exports.chatControl= async (req, res )=> {
   try {

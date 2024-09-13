@@ -9,7 +9,8 @@ const mongoose = require("mongoose");
     city:String,
     pinCode:Number,
     state:String,
-    district:String
+    district:String,
+    phone_number:String          /* added number */
  })
 
 module.exports = mongoose.model("startup",Startup);
