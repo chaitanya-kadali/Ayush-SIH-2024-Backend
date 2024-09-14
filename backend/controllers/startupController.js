@@ -117,7 +117,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
         // Save the StartupDashBoard to the database
         await newStartupdashModel.save();
 
-        res.status(201).json(newStartupdashModel);
+        res.status(201).json({ success: true, message: 'Dashboard details successfuly daved', newStartupdashModel: newStartupdashModel });
       } catch (error) {
         console.error('Error:', error);
         res.status(400).json({ error: error.message });
@@ -202,7 +202,7 @@ exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
 // Uploading Feedback from DrugInspector into Database
 exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
   const { Email } = req.body;
-
+  
   try {
     // Find the startup by email
     const StartUp = await StartupdashModel.findOne({ Email });
