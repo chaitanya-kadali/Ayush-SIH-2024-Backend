@@ -2,10 +2,6 @@ const Doctor = require("../models/doctormodel"); // object of doctor collection
 const Startup = require("../models/startupModel");// object of startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
-const express=require('express');
-
-const app=express();
-
 
 const multer = require("multer");
 

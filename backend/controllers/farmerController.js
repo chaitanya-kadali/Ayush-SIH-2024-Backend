@@ -3,34 +3,64 @@ const Startup = require("../models/startupModel"); // object of startup collecti
 const Cropname=require("../models/typesOfCrops");  //types of crops collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
+const Joi = require('joi');
 
 
-//Registration for Farmer
-exports.createFarmer = catchAsyncErrors( async (req, res) => {
-  const {name,phone_number,password,district,state,crop_name,language}= req.body;
+// Define the Joi schema for validation
+const schema = Joi.object({
+  name: Joi.string().min(3).required(),
+  phone_number: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
+  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+  district: Joi.string().required(),
+  state: Joi.string().required(),
+  crop_name: Joi.string().required(),
+  language: Joi.string().optional()
+});
 
-  try { 
+// Registration for Farmer
+app.post("/farmer-reg",async (req, res) => {
+  const { name, phone_number, password, district, state, crop_name, language } = req.body;
 
-  const verify = await Cropname.findOne({ crop_name });
-  if(!verify){
-    const newCropname= new Cropname({crop_name});
-    await newCropname.save();
+  // Validate the request body using Joi
+  const { error } = schema.validate({ name, phone_number, password, district, state, crop_name, language });
+
+  if (error) {
+    // If validation fails, return the error message
+    return res.status(400).json({ success: false, error: "password must contain only letters and numbers" });
   }
-    // Hash the password
 
+  try {
+    // Check if crop_name exists, and if not, create a new one
+    const verify = await Cropname.findOne({ crop_name });
+    if (!verify) {
+      const newCropname = new Cropname({ crop_name });
+      await newCropname.save();
+    }
+
+    // Hash the password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create newFarmer instance with hashed password
-    const newFarmer = new Farmer({name,phone_number,password:hashedPassword,district,state,crop_name,language});
+    const newFarmer = new farmer({
+      name,
+      phone_number,
+      password: hashedPassword,
+      district,
+      state,
+      crop_name,
+      language
+    });
 
     // Save the newFarmer to the database
     await newFarmer.save();
-    res.status(201).json({data:newFarmer, success: true}); // modified to match frontend
-} catch (error) {
+
+    // Respond with success and newFarmer data
+    res.status(201).json({ data: newFarmer, success: true });
+  } catch (error) {
     console.error('Error:', error);
-    res.status(400).json({ error: error.message,success: false });
-}
+    res.status(400).json({ success: false, error: error.message });
+  }
 });
 
 
