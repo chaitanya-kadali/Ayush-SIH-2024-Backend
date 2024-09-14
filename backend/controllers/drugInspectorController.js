@@ -4,6 +4,73 @@ const DI_Notification=require("../models/DI_Notification");  //object of DI_Noti
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const bcrypt=require("bcryptjs");
 
+const multer = require("multer");
+
+// Configure Multer to save files to the server
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./files");  // Set the directory where you want to save the files
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
+  }
+});
+const upload = multer({ storage: storage });
+
+
+// Registration for Druginspector
+exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
+
+    const uploadMiddleware = upload.single('OrderPdfCopy');
+
+  // Invoke the multer middleware manually
+  uploadMiddleware(req, res, async (err) => {
+    if (err) {
+      return res.status(500).send(err.message);
+    }
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+
+    const { name, Email_ID, password,mobile_no,designation,Qualification,orderReferenceNo,OrderDate,State,district} = req.body;
+
+    try {
+      // Hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Get the file path of the uploaded PDF
+      const pdfFilePath = req.file.path;
+
+      // Create a new Druginspector with the uploaded PDF's file path
+      const newDruginspector = new Druginspector({
+        name, 
+        Email_ID, 
+        password:hashedPassword,
+        mobile_no,
+        designation,
+        Qualification,
+        orderReferenceNo,
+        OrderDate,
+        OrderPdfCopy:pdfFilePath,
+        State,
+        district
+      }
+    );
+
+      // Save the drugInspector to the database
+      await newDruginspector.save();
+  
+      res.status(201).json({data:newDruginspector, success: true}); 
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(400).json({ error: error.message,success: false });
+    }
+  });
+
+  });
+
 
   //login for DrugInspector
   exports.drugInspectorLogin =catchAsyncErrors(async (req,res)=>{
