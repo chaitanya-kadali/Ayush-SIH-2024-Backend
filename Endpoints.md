@@ -1,0 +1,93 @@
+# Start All URLs With this
+    http://localhost:5002/api     then /YOUR_Wanted_below_URL
+# Doctor 
+    Doctor Registration
+    URL: /doctor-reg
+    Usage: Endpoint for doctor registration.
+
+    Doctor Login
+    URL: /doctor-login
+    Usage: Endpoint for doctor login.
+
+    Doctor Dashboard
+    URL: /doctor-dashboard
+    Usage: Endpoint for accessing the doctor dashboard.
+
+# Drug Inspector
+    Drug Inspector Login
+    URL: /drugInspector-login
+    Usage: Endpoint for drug inspector login.
+
+    Drug Inspector Dashboard
+    URL: /drugInspector-dashboard
+    Usage: Endpoint for accessing the drug inspector dashboard.
+
+    Drug Inspector Notification Post
+    URL: /DI-Notificationpost
+    Usage: Endpoint for drug inspectors to post notifications.
+
+    Drug Inspector Notification Sending Startups
+    URL: /DI-NotificationSendingStartups
+    Usage: Endpoint for drug inspectors to send notifications to startups.
+
+    Drug Inspector Notification Get
+    URL: /DI-NotificationGet
+    Usage: Endpoint for drug inspectors to fetch notifications.
+
+# Farmer
+    Farmer Registration
+    URL: /farmer-reg
+    Usage: Endpoint for farmer registration.
+
+    Farmer Login
+    URL: /farmer-login
+    Usage: Endpoint for farmer login.
+
+    Farmer Dashboard
+    URL: /farmer-dashboard
+    Usage: Endpoint for accessing the farmer dashboard.
+
+
+
+# Startup
+    Startup Registration
+    URL: /startup-reg
+    Usage: Endpoint for startup registration.
+
+    Startup Login
+    URL: /startup-login
+    Usage: Endpoint for startup login.
+
+    Startup Dashboard
+    URL: /startup-dashboard
+    Usage: Endpoint for accessing the startup dashboard.
+
+    Startup Farmer Dashboard
+    URL: /startupf-dashboard
+    Usage: Endpoint for accessing the startup farmer dashboard.
+
+    Startup Doctor Dashboard
+    URL: /startupd-dashboard
+    Usage: Endpoint for accessing the startup doctor dashboard.
+
+    Startup Feedback Post
+    URL: /StartupFeedback-post
+    Usage: Endpoint for submitting startup feedback.
+
+    Startup Feedback Get
+    URL: /StartupFeedback-get
+    Usage: Endpoint for retrieving startup feedback.
+
+# Email sending
+    URL: /send-email
+    Usage: Endpoint for sending emails.
+
+
+# Fetch Districts
+    URL: /districts
+    Usage: Endpoint for fetching district information.
+
+# Chatbot
+    Chat Control
+    URL: /chat
+    Usage: Endpoint for handling chat control.
