@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose=require('mongoose');
-// require('dotenv').config(); // to access the values .env file
-// const PORT=5002;
+const path = require('path'); // to use __dirname
+
 require('dotenv').config(); // to access the values .env file
 
 const app = express();
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(bodyParser.json());
+
 
 // MongoDB Atlas Connection
 const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
@@ -52,6 +52,13 @@ mongoose.connect(mongoUri)
 app.use("/api",chat);
 app.use("/api",district);
 app.use("/api",sendEmail);
+
+// Serve static files (HTML, CSS, JS)
+app.use(express.static('public'));
+// to display (serve) by default html content ( to make sure that the server is running when HOSTED)
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
 
 
 app.listen(process.env.PORT , () =>{ 

@@ -18,7 +18,7 @@ const schema = Joi.object({
 });
 
 // Registration for Farmer
-app.post("/farmer-reg",async (req, res) => {
+  exports.createFarmer = catchAsyncErrors( async (req, res) => {
   const { name, phone_number, password, district, state, crop_name, language } = req.body;
 
   // Validate the request body using Joi
