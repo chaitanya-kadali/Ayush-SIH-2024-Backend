@@ -56,7 +56,7 @@ app.use("/api",sendEmail);
 // Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
 // to display (serve) by default html content ( to make sure that the server is running when HOSTED)
-app.get('/', (req, res) => {
+app.get(['/', '/api'], (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
