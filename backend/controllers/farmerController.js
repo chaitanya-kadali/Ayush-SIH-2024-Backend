@@ -4,7 +4,7 @@ const Startup = require("../models/startupModel"); // object of startup collecti
 const Cropname=require("../models/typesOfCrops");  //types of crops collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const Famerschema=require("../middleware/schemaValidator");
+const {Famerschema}=require("../middleware/schemaValidator");
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token

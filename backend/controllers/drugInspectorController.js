@@ -4,7 +4,7 @@ const Startup=require("../models/startupModel");  //object of Startup collection
 const DI_Notification=require("../models/DI_Notification");  //object of DI_Notification collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const Druginspectorschema=require("../middleware/schemaValidator");
+const {Druginspectorschema} =require("../middleware/schemaValidator");
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading
