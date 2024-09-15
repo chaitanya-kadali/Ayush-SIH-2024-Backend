@@ -5,7 +5,7 @@ const Farmer = require("../models/farmerModel");  //object of Farmer collection
 const Doctor = require("../models/doctormodel");  //object of Doctor collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const Startupschema=require("../middleware/schemaValidator");  //validate Doctor schema 
+const {Startupschema}=require("../middleware/schemaValidator");  //validate Doctor schema 
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading

@@ -3,7 +3,7 @@ const Doctor = require("../models/doctormodel"); // object of doctor collection
 const Startup = require("../models/startupModel");// object of startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const Doctorschema=require("../middleware/schemaValidator");
+const {Doctorschema}=require("../middleware/schemaValidator");
 const multer = require("multer");  //object for pdf uploading
 require('dotenv').config();
 

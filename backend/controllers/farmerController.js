@@ -4,7 +4,7 @@ const Startup = require("../models/startupModel"); // object of startup collecti
 const Cropname=require("../models/typesOfCrops");  //types of crops collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const Famerschema=require("../middleware/schemaValidator");
+const {Farmerschema}=require("../middleware/schemaValidator");
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
@@ -15,7 +15,7 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
   const { name, phone_number, password, district, state, crop_name, language } = req.body;
 
   // Validate the request body using Joi
-  const { error } = Famerschema.validate({ name, phone_number, password, district, state, crop_name, language });
+  const { error } = Farmerschema.validate({ name, phone_number, password, district, state, crop_name, language });
 
   if (error) {
     // If validation fails, return the error message
