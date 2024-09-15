@@ -4,7 +4,11 @@ const Startup=require("../models/startupModel");  //object of Startup collection
 const DI_Notification=require("../models/DI_Notification");  //object of DI_Notification collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
+<<<<<<< HEAD
 const {Druginspectorschema} =require("../middleware/schemaValidator");
+=======
+const {Druginspectorschema}=require("../middleware/schemaValidator");
+>>>>>>> f6269ac9109c0d29cbe11b4b536e1b19b767a64d
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading

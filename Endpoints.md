@@ -35,7 +35,7 @@
     Drug Inspector Notification Post
     URL: /DI-Notificationpost
     Usage: Endpoint for drug inspectors to post notifications.
-    Input:  Startup_Email, NotificationMsgData, Startup_Company .
+    Input:  Startup_Email, NotificationMsgData, Startup_Company.
     Output: returns,success message, Notification data(StartupEmail,DI_Email,message) ,Success(true/false)
 
 
@@ -65,10 +65,13 @@
     Output: returns Corresponding details of Farmer ,success(true/false)
 
     Farmer Dashboard
-    URL: /farmer-dashboard
+    URL: /farmer-dashboard  rename to /startups-at-farmersdistrict
     Usage: Endpoint for accessing the farmer dashboard.
-    Input: Farmer district .
-    Output: returns Available startupdetails in that district,success(true/false)
+    Input: Farmer email id .
+    Output: returns success(true/false),
+            Tokensuccess(True/False),
+            StartupRetrievalsuccess(True/False),
+            Available startupdetails in that district
 
 
 # Startup
@@ -82,27 +85,32 @@
     URL: /startup-login
     Usage: Endpoint for startup login.
     Input: Startup Email_ID,password .
-    Output: returns Corresponding details of Startup ,success(true/false)
+    Output: returns Corresponding details of Startup ,success(true/false),
 
 
     Startup Dashboard
-    URL: /startup-dashboard
+    URL: /startup-dashboard  rename to /startup-fillapplication 
     Usage: Endpoint for accessing the startup dashboard.
     Input: Startup Dash_details like GST no,PAN no.... and two pdf's  .
     Output: returns Startup Dash_details details,success(true/false)
 
     Startup Farmer Dashboard
-    URL: /startupf-dashboard
+    URL: /farmertab-in-startup-and-token (renamed)
     Usage: Endpoint for accessing the startup farmer dashboard.
-    Input: Startup district .
-    Output: returns Available Farmers in that district,success(true/false).
+    Input: Startup email id.
+    Output: returns Tokensuccess(True/False),
+            FarmerRetrievalsuccess(True/False),
+            Available-Farmerdetails in that district
     
 
     Startup Doctor Dashboard
     URL: /startupd-dashboard
     Usage: Endpoint for accessing the startup doctor dashboard.
     Input: Startup district .
-    Output: returns Available Doctors in that district,success(true/false).
+    Output: returns success(true/false),
+            Tokensuccess(True/False),
+            DoctorRetrievalsuccess(True/False),
+            Available Doctordetails in that district
 
     Startup Feedback Post
     URL: /StartupFeedback-post
