@@ -22,16 +22,19 @@ const storage = multer.diskStorage({
   }
 });
 
-
+//Joi schema for validation 
 const schema = Joi.object({
-  name: Joi.string().min(3).required(),
-  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),
-  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-  district: Joi.string().required(),
-  state: Joi.string().required(),
-  crop_name: Joi.string().required(),
-  language: Joi.string().optional()
+  Email_ID: Joi.string().email().required(),  // Email must be a valid email format
+  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters, min 8 characters
+  companyName: Joi.string().min(3).required(),  // Company name must be a string, at least 3 characters long
+  address: Joi.string().required(),  // Address must be a string and is required
+  city: Joi.string().required(),  // City must be a string and is required
+  pinCode: Joi.number().integer().min(100000).max(999999).required(),  // Pin code as a 6-digit integer
+  state: Joi.string().required(),  // State must be a string and is required
+  district: Joi.string().required(),  // District must be a string and is required
+  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required()  // Phone number as a 10-digit integer
 });
+
 
 
   // Middleware to verify JWT token

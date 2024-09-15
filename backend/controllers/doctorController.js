@@ -7,15 +7,18 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET="secret_key_for_StartupPortal";
 const Joi = require('joi');
 
+
+//Joi schema for validation 
 const schema = Joi.object({
-  name: Joi.string().min(3).required(),
-  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),
-  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-  district: Joi.string().required(),
-  state: Joi.string().required(),
-  crop_name: Joi.string().required(),
-  language: Joi.string().optional()
+  name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
+  Email_ID: Joi.string().email().required(),  // Email must be a valid email format
+  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters
+  district: Joi.string().required(),   // District is a required string
+  state: Joi.string().required(),      // State is a required string
+  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),  // Phone number as a 10-digit integer
+  language: Joi.string().optional()    // Language is optional
 });
+
 
   // Middleware to verify JWT token
   const authenticateJWT = (req, res, next) => {
