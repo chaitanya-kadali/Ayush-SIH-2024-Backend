@@ -54,7 +54,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     if (!StartupDetails) {
     // User not found, send error response
   
-    return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
+    return res.status(404).json({ success: false, error: 'User not found or Invalid Email_ID.' });
   
     }
     // Compare passwords
