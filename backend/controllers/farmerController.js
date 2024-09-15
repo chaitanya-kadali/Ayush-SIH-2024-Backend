@@ -93,24 +93,33 @@ exports.FarmerLogin =catchAsyncErrors(async (req,res)=>{
 exports.FarmerDashboard = catchAsyncErrors(async (req, res) => {
   // Authenticate user before proceeding
   authenticateJWT(req, res, async () => {
-    const { district } = req.body;
+    const { phone_number } = req.body;
 
     try {
-      // Check if any startups are available in the specified district
-      const StartupsAvai = await Startup.find({ district });
+      // Find the farmer by email ID
+      const farmer = await Farmer.findOne({ phone_number });
+
+      if (!farmer) {
+        // If no farmer is found with the provided Email_ID, send error response
+        return res.status(404).json({ success: false, error: 'Farmer not found.' });
+      }
+
+      // Now use the farmer's district to find the available startups
+      const StartupsAvai = await Startup.find({ district: farmer.district });
 
       if (StartupsAvai.length === 0) {
         // No startups found, send error response
-        return res.status(404).json({ success: false, error: 'No Startups Available.' });
+        return res.status(404).json({ StartupRetrievalsuccess: false, error: 'No Startups Available in the farmer\'s district.' });
       }
 
       // Send success response with startup details
-      res.status(200).json({ success: true, message: 'Startup Details for farmer', StartupsAvai });
+      res.status(200).json({ success: true, StartupRetrievalsuccess: true, Tokensuccess: true, message: 'Startup Details for farmer', StartupsAvai });
     } catch (error) {
       console.error('Error during fetching startups:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
     }
   });
 });
+
 
 

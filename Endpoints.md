@@ -68,7 +68,10 @@
     URL: /farmer-dashboard
     Usage: Endpoint for accessing the farmer dashboard.
     Input: Farmer district .
-    Output: returns Available startupdetails in that district,success(true/false)
+    Output: returns success(true/false),
+            Tokensuccess(True/False),
+            StartupRetrievalsuccess(True/False),
+            Available startupdetails in that district
 
 
 # Startup
@@ -82,7 +85,7 @@
     URL: /startup-login
     Usage: Endpoint for startup login.
     Input: Startup Email_ID,password .
-    Output: returns Corresponding details of Startup ,success(true/false)
+    Output: returns Corresponding details of Startup ,success(true/false),
 
 
     Startup Dashboard
@@ -95,14 +98,20 @@
     URL: /startupf-dashboard
     Usage: Endpoint for accessing the startup farmer dashboard.
     Input: Startup district .
-    Output: returns Available Farmers in that district,success(true/false).
+    Output: returns success(true/false),
+            Tokensuccess(True/False),
+            FarmerRetrievalsuccess(True/False),
+            Available Farmerdetails in that district
     
 
     Startup Doctor Dashboard
     URL: /startupd-dashboard
     Usage: Endpoint for accessing the startup doctor dashboard.
     Input: Startup district .
-    Output: returns Available Doctors in that district,success(true/false).
+    Output: returns success(true/false),
+            Tokensuccess(True/False),
+            DoctorRetrievalsuccess(True/False),
+            Available Doctordetails in that district
 
     Startup Feedback Post
     URL: /StartupFeedback-post
