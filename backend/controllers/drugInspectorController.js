@@ -1,52 +1,18 @@
+const bcrypt = require("bcryptjs");  //object for password hashing
 const Druginspector = require("../models/drugInspectorModel");// object of drugInspector collection
 const Startup=require("../models/startupModel");  //object of Startup collection
 const DI_Notification=require("../models/DI_Notification");  //object of DI_Notification collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
+const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
+const Druginspectorschema=require("../middleware/schemaValidator");
+require('dotenv').config();
+
+const multer = require("multer");//object for pdf uploading
+
+const jwt = require('jsonwebtoken');  //object to Generate JWT token
 const JWT_SECRET="secret_key_for_StartupPortal";
-const Joi = require('joi');
-
-const multer = require("multer");
-const path = require("path"); // Used to get file extensions
-const fs = require("fs"); // Required for file handling (if needed)
-const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
 
 
-//Joi schema for validation 
-const schema = Joi.object({
-  name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
-  Email_ID: Joi.string().email().required(),  // Email must be a valid email format
-  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters
-  mobile_no: Joi.number().integer().min(1000000000).max(9999999999).required(),  // Mobile number as a 10-digit integer
-  designation: Joi.string().required(),  // Designation is a required string
-  Qualification: Joi.string().required(),  // Qualification is a required string
-  orderReferenceNo: Joi.string().required(),  // Order reference number is a required string
-  OrderDate: Joi.date().required(),  // Order date must be a valid date
-  State: Joi.string().required(),  // State is a required string
-  district: Joi.string().required()  // District is a required string
-});
-
-
-  // Middleware to verify JWT token
-  const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader) {
-        // Extract token from Bearer header
-        const token = authHeader.split(' ')[1];
-
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.status(403).json({ success: false, error: 'Invalid token.' });
-            }
-            // Attach user information to the request
-            req.user = user;
-            next();
-        });
-    } else {
-        res.status(401).json({ success: false, error: 'Authorization token missing.' });
-    }
-}
 
 
 // Configure Multer with file type and size restrictions
@@ -96,7 +62,7 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district } = req.body;
     // Validate the request body using Joi
-    const { error } = schema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district});
+    const { error } = Druginspectorschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district});
 
     if (error) {
       // If validation fails, return the error message
@@ -159,7 +125,7 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
     }
     const token = jwt.sign(
       { id: Druginspector._id, Email_ID: Druginspector.Email_ID },  // Payload data
-      JWT_SECRET,  // Secret key
+      process.env.JWT_SECRET,  // Secret key
       { expiresIn: '1h' }  // Token expiry time (1 hour)
     );
     res.status(200).json({ success: true, message: 'Login successful',token: token, DruginspectorDetails: DruginspectorDetails });
@@ -172,10 +138,10 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
     //Dashboard for Drug Inspector
     exports.DrugInspectorDashboard =catchAsyncErrors(async (req,res)=>{
       authenticateJWT(req,res,async()=>{
-        const { District} = req.body;
+        const { district} = req.body;
       try {
       // Check if StartupsAvailable exists in the database
-      const StartupsAvai = await Startup.find({District});
+      const StartupsAvai = await Startup.find({district});
     
       if (!StartupsAvai) {
       // StartupsAvailable not found, send error response

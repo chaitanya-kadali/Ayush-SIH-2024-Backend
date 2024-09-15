@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
     pinCode:Number,
     state:String,
     district:String,
-    phone_number:String          /* added number */
+    phone_number:Number          /* added number */
  })
 
 module.exports = mongoose.model("startup",Startup);
