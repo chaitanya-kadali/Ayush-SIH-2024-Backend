@@ -58,33 +58,31 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
 
 //login for Startup
 
-  exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
+exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
     const { Email_ID, password } = req.body;
-    try {
-    // Check if user exists in the Database
-    const StartupDetails = await Startup.findOne({ Email_ID });
+    try // Check if user exists in the Database
+    {    const StartupDetails = await Startup.findOne({ Email_ID });
+        if (!StartupDetails) {
+        // User not found, send error response
+        console.log("email and user not found !!");
+        return res.status(404).json({ success: false,throwmsg:"email not found !!", error: 'User not found or Invalid Email_ID.' });
+        }
+        // Compare passwords
+        const passwordMatch = await bcrypt.compare(password, StartupDetails.password);
+        if (!passwordMatch) {
+        // Passwords don't match, send error response
+        console.log("Password did'nt match !!");
+        return res.status(403).json({ success: false, throwmsg:"Password did'nt match !!",error: 'Invalid Email_ID or password.' });
+        }
 
-    if (!StartupDetails) {
-    // User not found, send error response
-  
-    return res.status(404).json({ success: false, error: 'User not found or Invalid Email_ID.' });
-  
-    }
-    // Compare passwords
-    const passwordMatch = await bcrypt.compare(password, StartupDetails.password);
-    if (!passwordMatch) {
-    // Passwords don't match, send error response
-    return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
-    }
+        const token = jwt.sign(
+          { id: StartupDetails._id, Email_ID: StartupDetails.Email_ID },  // Payload data
+          process.env.JWT_SECRET,  // Secret key
+          { expiresIn: '4h' }  // Token expiry time (4 hour) changed to 4 hours
+        );
 
-    const token = jwt.sign(
-      { id: StartupDetails._id, Email_ID: StartupDetails.Email_ID },  // Payload data
-      process.env.JWT_SECRET,  // Secret key
-      { expiresIn: '1h' }  // Token expiry time (1 hour)
-    );
-
-    res.json({ success: true, message: 'Login successful',token: token, StartupDetails: StartupDetails });
-
+        res.json({ success: true, message: 'Login successful',token: token, StartupDetails: StartupDetails });
+    
     } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -147,29 +145,29 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
   });
 
   //DashBoard for Startup-farmer
-    exports.StartupF_Dashboard =catchAsyncErrors(async (req,res)=>{
-      //  Authenticate user before proceeding
-      authenticateJWT(req,res,async()=>{
-        const { Email_ID } = req.body;
-      try {
-      // Check if user exists in the database
-      const startup = await Startup.findOne({Email_ID});
-      if (!startup) {
-      // User not found, send error response
-      return res.status(404).json({ success: false, error: 'No Startups Available.' });
-      }
-      const FarmersAvai = await Farmer.find({district:startup.district});
+    exports.Startup_farmer_tab_and_token =catchAsyncErrors(async (req,res)=>{
+          //  Authenticate user BEFORE proceeding 
+          // so considering that if token authentication is false then further retrieval of farmer datails and other BELOW stuff WILLN'T happen
+        authenticateJWT(req,res,async()=>{
+            const { Email_ID } = req.body;
+          try {
+                // Check if user exists in the database
+                const startup = await Startup.findOne({Email_ID});
+                if (!startup) {
+                  // User not found, send error response
+                  return res.status(404).json({ startupfound: false, error: 'No Startups Available. with the sent email' }); // no possible chances for this to happen
+                }
+                const FarmersAvail = await Farmer.find({district:startup.district});
+                if(FarmerAvail.length===0){
+                  res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startup\'s district.'}) // status should be 200 as no farmer is not an error
+                }
 
-      if(FarmerAvai.lenght===0){
-        res.status(404).json({FarmerRetrievalSuccess:false,error: 'No Farmers Available in this Startup\'s district.'})
-      }
-
-      res.status(200).json({ success: true, Tokensuccess:true, FarmerRetrievalSuccess:true,message: 'Farmer Details for Startup', FarmersAvai: FarmersAvai });
-      } catch (error) {
-      console.error('Error during login:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
-       }
-      })
+                res.status(200).json({farmerRetrievalSuccess:true, Farmerslist: FarmersAvai });// considering tokensuccess : true was already sent before
+            } catch (error) {
+                  console.error('Error during farmer data fetch at startup dashboard:', error);
+                  res.status(500).json({ success: false, error: 'Internal server error' });
+             }
+        })
     });
 
       //DashBoard for Startup-doctor
@@ -191,7 +189,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
       
         res.json({ success: true,Tokensuccess:true,DoctorRetrievalSuccess:true, message: 'Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
         } catch (error) {
-        console.error('Error during login:', error);
+        console.error('Error during doctor dashboard:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
          }
         })
