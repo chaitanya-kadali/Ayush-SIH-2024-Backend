@@ -4,7 +4,7 @@ const {
 createStartUp,
 StartupLogin,
 Startup_Dashboard,
-StartupF_Dashboard,
+Startup_farmer_tab_and_token,
 StartupD_Dashboard,
 StartupFeedback_upload,
 StartupFeedback_Get
@@ -23,7 +23,7 @@ router.route("/startup-login").post(asyncMiddleware(StartupLogin));
 router.route("/startup-dashboard").post(asyncMiddleware(Startup_Dashboard));
 
 //dashboard for startup farmer
-router.route("/startupf-dashboard").post(asyncMiddleware(StartupF_Dashboard)); 
+router.route("/farmertab-in-startup-and-token").post(asyncMiddleware(Startup_farmer_tab_and_token)); 
 
 //dashboard for startup doctor
 router.route("/startupd-dashboard").post(asyncMiddleware(StartupD_Dashboard)); 
