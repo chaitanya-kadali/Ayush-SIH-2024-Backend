@@ -35,7 +35,7 @@
     Drug Inspector Notification Post
     URL: /DI-Notificationpost
     Usage: Endpoint for drug inspectors to post notifications.
-    Input:  Startup_Email, NotificationMsgData, Startup_Company .
+    Input:  Startup_Email, NotificationMsgData, Startup_Company.
     Output: returns,success message, Notification data(StartupEmail,DI_Email,message) ,Success(true/false)
 
 
