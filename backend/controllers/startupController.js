@@ -1,15 +1,17 @@
+const bcrypt=require("bcryptjs");  //object for password hashing
 const Startup = require("../models/startupModel"); // object of Startup collection
 const StartupdashModel=require("../models/StartupDashModel");  //object for StartupDashboard Collection 
 const Farmer = require("../models/farmerModel");  //object of Farmer collection
 const Doctor = require("../models/doctormodel");  //object of Doctor collection
-const  catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-const bcrypt=require("bcryptjs");
-const Joi = require('joi');
-const jwt = require('jsonwebtoken');
-const JWT_SECRET="secret_key_for_StartupPortal";
+const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
+const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
+const Startupschema=require("../middleware/schemaValidator");  //validate Doctor schema 
+require('dotenv').config();
 
+const multer = require("multer");//object for pdf uploading
 
-const multer = require("multer");
+const jwt = require('jsonwebtoken');  //object to Generate JWT token
+
 
 // Configure Multer to save files to the server
 const storage = multer.diskStorage({
@@ -22,42 +24,6 @@ const storage = multer.diskStorage({
   }
 });
 
-//Joi schema for validation 
-const schema = Joi.object({
-  Email_ID: Joi.string().email().required(),  // Email must be a valid email format
-  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters, min 8 characters
-  companyName: Joi.string().min(3).required(),  // Company name must be a string, at least 3 characters long
-  address: Joi.string().required(),  // Address must be a string and is required
-  city: Joi.string().required(),  // City must be a string and is required
-  pinCode: Joi.number().integer().min(100000).max(999999).required(),  // Pin code as a 6-digit integer
-  state: Joi.string().required(),  // State must be a string and is required
-  district: Joi.string().required(),  // District must be a string and is required
-  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required()  // Phone number as a 10-digit integer
-});
-
-
-
-  // Middleware to verify JWT token
-  const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader) {
-        // Extract token from Bearer header
-        const token = authHeader.split(' ')[1];
-
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.status(403).json({ success: false, error: 'Invalid token.' });
-            }
-            // Attach user information to the request
-            req.user = user;
-            next();
-        });
-    } else {
-        res.status(401).json({ success: false, error: 'Authorization token missing.' });
-    }
-};
-
 const upload = multer({ storage: storage });
 
 
@@ -66,12 +32,12 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
   const {Email_ID,password,companyName,address ,city,pinCode,
     state,district,phone_number}=req.body;
     // Validate the request body using Joi
-    const { error } = schema.validate({ Email_ID,password,companyName,address ,city,pinCode,
+    const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
       state,district,phone_number});
 
   if (error) {
     // If validation fails, return the error message
-    return res.status(400).json({ success: false, error: "password must contain only letters and numbers" });
+    return res.status(400).json({ success: false, error: error.details[0].message });
   }
   try {
     const saltRounds = 10;
@@ -83,7 +49,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     // Save the user to the database
     await NewstartUp.save();
 
-    res.status(201).json({data:NewstartUp, success:true});
+    res.status(201).json({data:NewstartUp, success:true,message:"Startup successfully created"});
   } catch (error) {
     console.error('Error:', error);
     res.status(400).json({ error: error.message , success:false});
@@ -113,7 +79,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
 
     const token = jwt.sign(
       { id: StartupDetails._id, Email_ID: StartupDetails.Email_ID },  // Payload data
-      JWT_SECRET,  // Secret key
+      process.env.JWT_SECRET,  // Secret key
       { expiresIn: '1h' }  // Token expiry time (1 hour)
     );
 

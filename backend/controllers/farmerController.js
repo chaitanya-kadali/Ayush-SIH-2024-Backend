@@ -1,51 +1,21 @@
+const bcrypt=require("bcryptjs");  //object for passowrd hashing
 const Farmer = require("../models/farmerModel");   // object of farmer collection
 const Startup = require("../models/startupModel"); // object of startup collection
 const Cropname=require("../models/typesOfCrops");  //types of crops collection
-const  catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-const bcrypt=require("bcryptjs");
-const Joi = require('joi');
-const jwt = require('jsonwebtoken');
-const JWT_SECRET="secret_key_for_StartupPortal";
+const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
+const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
+const Famerschema=require("../middleware/schemaValidator");
+require('dotenv').config();
 
-  // Middleware to verify JWT token
-  const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
-    if (authHeader) {
-        // Extract token from Bearer header
-        const token = authHeader.split(' ')[1];
-
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.status(403).json({ success: false, error: 'Invalid token.' });
-            }
-            // Attach user information to the request
-            req.user = user;
-            next();
-        });
-    } else {
-        res.status(401).json({ success: false, error: 'Authorization token missing.' });
-    }
-};
-
-
-// Define the Joi schema for validation
-const schema = Joi.object({
-  name: Joi.string().min(3).required(),
-  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),
-  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-  district: Joi.string().required(),
-  state: Joi.string().required(),
-  crop_name: Joi.string().required(),
-  language: Joi.string().optional()
-});
 
 // Registration for Farmer
   exports.createFarmer = catchAsyncErrors( async (req, res) => {
   const { name, phone_number, password, district, state, crop_name, language } = req.body;
 
   // Validate the request body using Joi
-  const { error } = schema.validate({ name, phone_number, password, district, state, crop_name, language });
+  const { error } = Famerschema.validate({ name, phone_number, password, district, state, crop_name, language });
 
   if (error) {
     // If validation fails, return the error message
@@ -108,7 +78,7 @@ exports.FarmerLogin =catchAsyncErrors(async (req,res)=>{
   }
   const token = jwt.sign(
     { id: FarmerDetails._id, phone_number: FarmerDetails.phone_number },  // Payload data
-    JWT_SECRET,  // Secret key
+    process.env.JWT_SECRET,  // Secret key
     { expiresIn: '1h' }  // Token expiry time (1 hour)
   );
 
