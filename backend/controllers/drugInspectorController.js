@@ -2,12 +2,45 @@ const Druginspector = require("../models/drugInspectorModel");// object of drugI
 const Startup=require("../models/startupModel");  //object of Startup collection
 const DI_Notification=require("../models/DI_Notification");  //object of DI_Notification collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-
+const JWT_SECRET="secret_key_for_StartupPortal";
+const Joi = require('joi');
 
 const multer = require("multer");
 const path = require("path"); // Used to get file extensions
 const fs = require("fs"); // Required for file handling (if needed)
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+
+const schema = Joi.object({
+  name: Joi.string().min(3).required(),
+  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),
+  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+  district: Joi.string().required(),
+  state: Joi.string().required(),
+  crop_name: Joi.string().required(),
+  language: Joi.string().optional()
+});
+
+  // Middleware to verify JWT token
+  const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        // Extract token from Bearer header
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, JWT_SECRET, (err, user) => {
+            if (err) {
+                return res.status(403).json({ success: false, error: 'Invalid token.' });
+            }
+            // Attach user information to the request
+            req.user = user;
+            next();
+        });
+    } else {
+        res.status(401).json({ success: false, error: 'Authorization token missing.' });
+    }
+}
 
 
 // Configure Multer with file type and size restrictions
@@ -56,7 +89,13 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
 
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district } = req.body;
+    // Validate the request body using Joi
+    const { error } = schema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district});
 
+    if (error) {
+      // If validation fails, return the error message
+      return res.status(400).json({ success: false, error: "password must contain only letters and numbers" });
+    }
     try {
       // Hash the password for security
       const saltRounds = 10;
@@ -112,7 +151,12 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
     // Passwords don't match, send error response
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
-    res.status(200).json({ success: true, message: 'Login successful', DruginspectorDetails: DruginspectorDetails });
+    const token = jwt.sign(
+      { id: Druginspector._id, Email_ID: Druginspector.Email_ID },  // Payload data
+      JWT_SECRET,  // Secret key
+      { expiresIn: '1h' }  // Token expiry time (1 hour)
+    );
+    res.status(200).json({ success: true, message: 'Login successful',token: token, DruginspectorDetails: DruginspectorDetails });
     } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -121,7 +165,8 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
 
     //Dashboard for Drug Inspector
     exports.DrugInspectorDashboard =catchAsyncErrors(async (req,res)=>{
-      const { District} = req.body;
+      authenticateJWT(req,res,async()=>{
+        const { District} = req.body;
       try {
       // Check if StartupsAvailable exists in the database
       const StartupsAvai = await Startup.find({District});
@@ -138,6 +183,7 @@ exports.createDrugInspector = catchAsyncErrors(async (req, res) => {
       console.error('Error during login:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
        }
+      })
     });
 
     //uploading notification from StartUp into Database
