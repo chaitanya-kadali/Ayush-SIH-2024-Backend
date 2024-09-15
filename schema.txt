@@ -10,15 +10,6 @@
     date:02-04-2005
 }
 
-//drug Inspector model
-{
-    name:sai,
-    Email_ID:sai@gmail.com,,
-    password:sai@123,
-    State:andhra,
-    district:godavari,
-    Notification:please check my saitech company
-}
 
 //Farmer model
 {
@@ -50,6 +41,21 @@
 
 //these are the models that are used in form data in post man
 
+//Drug Inspector model
+{
+  "name": "Rajesh Kumar",
+  "Email_ID": "rajesh.kumar@example.com",
+  "password": "SecurePass123",
+  "mobile_no": 9876543210,
+  "designation": "Drug Inspector",
+  "Qualification": "B.Pharm, M.Pharm",
+  "OrderReferenceNo": 123456789,
+  "OrderDate": "2024-09-14",
+  "OrderPdfCopy": "order_document.pdf",
+  "State": "Maharashtra",
+  "district": "Pune",
+  "Notification": "New inspection scheduled for 2024-10-01"
+}
 
 //Startup Dashboard model
 {
