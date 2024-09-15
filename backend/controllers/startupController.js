@@ -145,10 +145,15 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
   });
 
   //DashBoard for Startup-farmer
-    exports.Startup_farmer_tab_and_token =catchAsyncErrors(async (req,res)=>{
+  exports.Startup_farmer_tab_and_token =catchAsyncErrors(async (req,res)=>
+  {
           //  Authenticate user BEFORE proceeding 
           // so considering that if token authentication is false then further retrieval of farmer datails and other BELOW stuff WILLN'T happen
-        authenticateJWT(req,res,async()=>{
+       console.log("line 152 varuku called");
+          authenticateJWT(req,res); // seperating the components as a doubt
+
+          console.log("line 155 varuku called");
+
             const { Email_ID } = req.body;
           try {
                 // Check if user exists in the database
@@ -159,7 +164,8 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
                 }
                 const FarmersAvail = await Farmer.find({district:startup.district});
                 if(FarmerAvail.length===0){
-                  res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startup\'s district.'}) // status should be 200 as no farmer is not an error
+                  console.log("No Farmers Available in this Startups district.");
+                  res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startups district.'}) // status should be 200 as no farmer is not an error
                 }
 
                 res.status(200).json({farmerRetrievalSuccess:true, Farmerslist: FarmersAvai });// considering tokensuccess : true was already sent before
@@ -167,11 +173,11 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
                   console.error('Error during farmer data fetch at startup dashboard:', error);
                   res.status(500).json({ success: false, error: 'Internal server error' });
              }
-        })
+        
     });
 
       //DashBoard for Startup-doctor
-      exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
+exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
         authenticateJWT(req,res,async()=>{
           const { Email_ID } = req.body;
       try {
