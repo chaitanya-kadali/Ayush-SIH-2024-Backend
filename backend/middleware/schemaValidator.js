@@ -1,6 +1,6 @@
 const Joi=require('joi');
 
-
+//Doctor schema validator
 const Doctorschema = Joi.object({
     name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
@@ -11,6 +11,7 @@ const Doctorschema = Joi.object({
     language: Joi.string().optional()    // Language is optional
   });
 
+  //DrugInspector schema validator
   const Druginspectorschema = Joi.object({
     name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
@@ -24,7 +25,7 @@ const Doctorschema = Joi.object({
     district: Joi.string().required()  // District is a required string
   });
 
-
+//Farmer schema validator
   const Farmerschema = Joi.object({
     name: Joi.string().min(3).required(),
     phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),
@@ -35,7 +36,7 @@ const Doctorschema = Joi.object({
     language: Joi.string().optional()
   });
 
-//Joi schema for validation 
+//Startup schema validator
 const Startupschema = Joi.object({
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
     password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters, min 8 characters
@@ -47,5 +48,7 @@ const Startupschema = Joi.object({
     district: Joi.string().required(),  // District must be a string and is required
     phone_number: Joi.number().integer().min(1000000000).max(9999999999).required()  // Phone number as a 10-digit integer
   });
+
+
 
   module.exports = { Doctorschema, Druginspectorschema, Farmerschema, Startupschema };
