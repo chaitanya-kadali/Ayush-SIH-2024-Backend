@@ -1,11 +1,17 @@
+const bcrypt=require("bcryptjs");  //object for password hashing
 const Startup = require("../models/startupModel"); // object of Startup collection
 const StartupdashModel=require("../models/StartupDashModel");  //object for StartupDashboard Collection 
 const Farmer = require("../models/farmerModel");  //object of Farmer collection
 const Doctor = require("../models/doctormodel");  //object of Doctor collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-const bcrypt=require("bcryptjs");
+const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
+const {Startupschema}=require("../middleware/schemaValidator");  //validate Doctor schema 
+require('dotenv').config();
 
-const multer = require("multer");
+const multer = require("multer");//object for pdf uploading
+
+const jwt = require('jsonwebtoken');  //object to Generate JWT token
+
 
 // Configure Multer to save files to the server
 const storage = multer.diskStorage({
@@ -18,7 +24,6 @@ const storage = multer.diskStorage({
   }
 });
 
-
 const upload = multer({ storage: storage });
 
 
@@ -26,6 +31,14 @@ const upload = multer({ storage: storage });
 exports.createStartUp = catchAsyncErrors( async (req, res) => {
   const {Email_ID,password,companyName,address ,city,pinCode,
     state,district,phone_number}=req.body;
+    // Validate the request body using Joi
+    const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
+      state,district,phone_number});
+
+  if (error) {
+    // If validation fails, return the error message
+    return res.status(400).json({ success: false, error: error.details[0].message });
+  }
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -36,7 +49,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     // Save the user to the database
     await NewstartUp.save();
 
-    res.status(201).json({data:NewstartUp, success:true});
+    res.status(201).json({data:NewstartUp, success:true,message:"Startup successfully created"});
   } catch (error) {
     console.error('Error:', error);
     res.status(400).json({ error: error.message , success:false});
@@ -63,7 +76,15 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     // Passwords don't match, send error response
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
-    res.json({ success: true, message: 'Login successful', StartupDetails: StartupDetails });
+
+    const token = jwt.sign(
+      { id: StartupDetails._id, Email_ID: StartupDetails.Email_ID },  // Payload data
+      process.env.JWT_SECRET,  // Secret key
+      { expiresIn: '1h' }  // Token expiry time (1 hour)
+    );
+
+    res.json({ success: true, message: 'Login successful',token: token, StartupDetails: StartupDetails });
+
     } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -127,7 +148,9 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
 
   //DashBoard for Startup-farmer
     exports.StartupF_Dashboard =catchAsyncErrors(async (req,res)=>{
-      const { District} = req.body;
+      //  Authenticate user before proceeding
+      authenticateJWT(req,res,async()=>{
+        const { District} = req.body;
       try {
       // Check if user exists in the database
       const FarmersAvai = await Farmer.find({District});
@@ -144,11 +167,13 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
       console.error('Error during login:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
        }
+      })
     });
 
       //DashBoard for Startup-doctor
       exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
-        const { district} = req.body;
+        authenticateJWT(req,res,async()=>{
+          const { district} = req.body;
         try {
         // Check if user exists in the database
         const DoctorsAvai = await Doctor.find({district});
@@ -165,6 +190,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
         console.error('Error during login:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
          }
+        })
       });
   
 // Uploading Feedback from DrugInspector into Database

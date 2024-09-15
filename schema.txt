@@ -3,79 +3,86 @@
 //Drug Inspector notification details
 
 {
-    DI_Email:sai@gmail.com,
-    Startup_Email:saiv@123,
-    Startup_Company:saitech,
-    notification:this is from saitech company please check my company liscense,
-    date:02-04-2005
-}
-
-//drug Inspector model
-{
-    name:sai,
-    Email_ID:sai@gmail.com,,
-    password:sai@123,
-    State:andhra,
-    district:godavari,
-    Notification:please check my saitech company
+    "DI_Email": "sai@gmail.com",
+    "Startup_Email": "saiv@123",
+    "Startup_Company": "saitech",
+    "notification": "this is from saitech company please check my company license",
+    "date": "02-04-2005"
 }
 
 //Farmer model
 {
-    name:sai,
-      phone_number:8803434888,
-      password:sai@123,
-      district:godavari,
-      state:andhra,
-      crop_name:paddy,
-      language:telugu
+    "name": "sai",
+    "phone_number": 8803434888,
+    "password": "sai@123",
+    "district": "godavari",
+    "state": "andhra",
+    "crop_name": "paddy",
+    "language": "telugu"
 }
 
 //Startup model
 {
-    Email_ID:sai@gmail.com,,
-   password:sai@123,
-    companyName : saitech,
-    address : 10-1-2,vasa street,narsapuram,godavari,andhra,
-    city:narsapuram,
-    pinCode:534275,
-    state:andhra,
-    district:godavari
+    "Email_ID": "sai@gmail.com",
+    "password": "sai@123",
+    "companyName": "saitech",
+    "address": "10-1-2, vasa street, narsapuram, godavari, andhra",
+    "city": "narsapuram",
+    "pinCode": "534275",
+    "state": "andhra",
+    "district": "godavari"
 }
 
 //types of crops model
 {
-    crop_name:paddy
+    "crop_name":"paddy"
 }
+
 
 //these are the models that are used in form data in post man
 
+//Drug Inspector model
+{
+  "name": "Rajesh Kumar",
+  "Email_ID": "rajesh.kumar@example.com",
+  "password": "SecurePass123",
+  "mobile_no": 9876543210,
+  "designation": "Drug Inspector",
+  "Qualification": "B.Pharm, M.Pharm",
+  "OrderReferenceNo": 123456789,
+  "OrderDate": "2024-09-14",
+  "OrderPdfCopy": "order_document.pdf",
+  "State": "Maharashtra",
+  "district": "Pune",
+  "Notification": "New inspection scheduled for 2024-10-01"
+}
 
 //Startup Dashboard model
 {
-    Email:sai@gmail.com,
-    PANno:3YE83H894GF,
-    GSTno:BF8E84T38R8,
-    websiteAddress:www.saitech.com,
-    certificateNo:Number,
-    CompanyDOI:02-06-2005,
-    IssuuingAuthority:saisaisai,
-    IE_code:83648374,
-    IE_DOI:02-05-2005,
-    pdf1:upload pdf in form-data{type=file},
-    pdf2:upload pdf in form-data{type=file}
-    feedback:there are no issues in your pdf's
+    "Email": "sai@gmail.com",
+    "PANno": "3YE83H894GF",
+    "GSTno": "BF8E84T38R8",
+    "websiteAddress": "www.saitech.com",
+    "certificateNo": 645658738,
+    "CompanyDOI": "02-06-2005",
+    "IssuuingAuthority": "saisaisai",
+    "IE_code": 83648374,
+    "IE_DOI": "02-05-2005",
+    "pdf1": "upload pdf in form-data{type=file}",
+    "pdf2": "upload pdf in form-data{type=file}",
+    "feedback": "there are no issues in your pdf's"
 }
 
 //doctor model
 {
-       name:sai,
-      Email_ID:sai@gmail.com,
-      password:sai@123,
-      district:west godavari,
-      state:andhra,
-      phone_number:8803434888,
-      language:telugu,
-      pdf:upload pdf in form-data{type=file}
+    "name": "sai",
+    "Email_ID": "sai@gmail.com",
+    "password": "sai@123",
+    "district": "west godavari",
+    "state": "andhra",
+    "phone_number": 8803434888,
+    "language": "telugu",
+    "pdf": "upload pdf in form-data{type=file}"
 }
+
 

@@ -31,6 +31,7 @@ mongoose.connect(mongoUri)
     console.error('Error connecting to MongoDB Atlas:', error);
 });
 
+
 // importings of persons
   const farmer = require("./routes/farmerRoute");
   const doctor = require("./routes/doctorRoute");

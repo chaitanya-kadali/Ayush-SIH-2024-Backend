@@ -1,28 +1,21 @@
+const bcrypt=require("bcryptjs");  //object for passowrd hashing
 const Farmer = require("../models/farmerModel");   // object of farmer collection
 const Startup = require("../models/startupModel"); // object of startup collection
 const Cropname=require("../models/typesOfCrops");  //types of crops collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-const bcrypt=require("bcryptjs");
-const Joi = require('joi');
+const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
+const {Farmerschema}=require("../middleware/schemaValidator");
+require('dotenv').config();
 
+const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
-// Define the Joi schema for validation
-const schema = Joi.object({
-  name: Joi.string().min(3).required(),
-  phone_number: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-  district: Joi.string().required(),
-  state: Joi.string().required(),
-  crop_name: Joi.string().required(),
-  language: Joi.string().optional()
-});
 
 // Registration for Farmer
   exports.createFarmer = catchAsyncErrors( async (req, res) => {
   const { name, phone_number, password, district, state, crop_name, language } = req.body;
 
   // Validate the request body using Joi
-  const { error } = schema.validate({ name, phone_number, password, district, state, crop_name, language });
+  const { error } = Farmerschema.validate({ name, phone_number, password, district, state, crop_name, language });
 
   if (error) {
     // If validation fails, return the error message
@@ -42,7 +35,7 @@ const schema = Joi.object({
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create newFarmer instance with hashed password
-    const newFarmer = new farmer({
+    const newFarmer = new Farmer({
       name,
       phone_number,
       password: hashedPassword,
@@ -83,29 +76,41 @@ exports.FarmerLogin =catchAsyncErrors(async (req,res)=>{
   // Passwords don't match, send error response
   return res.status(403).json({ success: false, error: 'Invalid phone_number or password.' });
   }
-  res.status(201).json({ success: true, message: 'Login successful', FarmerDetails: FarmerDetails });
+  const token = jwt.sign(
+    { id: FarmerDetails._id, phone_number: FarmerDetails.phone_number },  // Payload data
+    process.env.JWT_SECRET,  // Secret key
+    { expiresIn: '1h' }  // Token expiry time (1 hour)
+  );
+
+  res.status(201).json({ success: true, message: 'Login successful', token: token,FarmerDetails: FarmerDetails });
   } catch (error) {
   console.error('Error during login:', error);
   res.status(500).json({ success: false, error: 'Internal server error' });
    }
 });
 
-  //Dashboard for Farmer
-  exports.FarmerDashboard =catchAsyncErrors(async (req,res)=>{
-    const { District} = req.body;
+// Dashboard for Farmer
+exports.FarmerDashboard = catchAsyncErrors(async (req, res) => {
+  // Authenticate user before proceeding
+  authenticateJWT(req, res, async () => {
+    const { district } = req.body;
+
     try {
-    // Check if user exists in the database
-    const StartupsAvai = await Startup.find({District});
-  
-    if (!StartupsAvai) {
-    // User not found, send error response
-    return res.status(404).json({ success: false, error: 'No Startups Available.' });
-    }
-  
-    res.status(201).json({ success: true, message: 'Startup Details for farmer', StartupsAvai: StartupsAvai });
+      // Check if any startups are available in the specified district
+      const StartupsAvai = await Startup.find({ district });
+
+      if (StartupsAvai.length === 0) {
+        // No startups found, send error response
+        return res.status(404).json({ success: false, error: 'No Startups Available.' });
+      }
+
+      // Send success response with startup details
+      res.status(200).json({ success: true, message: 'Startup Details for farmer', StartupsAvai });
     } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-     }
+      console.error('Error during fetching startups:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+    }
   });
+});
+
 
