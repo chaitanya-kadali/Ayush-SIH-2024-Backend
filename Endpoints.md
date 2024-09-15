@@ -143,3 +143,9 @@
     Usage: Endpoint for handling chat control.
     Input: request message data  .
     Output: returns response data from chatbot,success(true/false).
+
+# Status TrackPad and License-Authority + Drug Inspector Connector
+    Status of STARTUP Application Process
+    URL 1 : 
+    Input :
+    Output : 
