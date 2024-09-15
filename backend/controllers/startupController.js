@@ -150,19 +150,21 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     exports.StartupF_Dashboard =catchAsyncErrors(async (req,res)=>{
       //  Authenticate user before proceeding
       authenticateJWT(req,res,async()=>{
-        const { District} = req.body;
+        const { Email_ID } = req.body;
       try {
       // Check if user exists in the database
-      const FarmersAvai = await Farmer.find({District});
-      
-      if (!FarmersAvai) {
+      const startup = await Startup.findOne({Email_ID});
+      if (!startup) {
       // User not found, send error response
-    
-      return res.status(404).json({ success: false, error: 'No Farmers Available.' });
-    
+      return res.status(404).json({ success: false, error: 'No Startups Available.' });
       }
-      
-      res.status(200).json({ success: true, message: 'Farmer Details for Startup', FarmersAvai: FarmersAvai });
+      const FarmersAvai = await Farmer.find({district:startup.district});
+
+      if(FarmerAvai.lenght===0){
+        res.status(404).json({FarmerRetrievalSuccess:false,error: 'No Farmers Available in this Startup\'s district.'})
+      }
+
+      res.status(200).json({ success: true, Tokensuccess:true, FarmerRetrievalSuccess:true,message: 'Farmer Details for Startup', FarmersAvai: FarmersAvai });
       } catch (error) {
       console.error('Error during login:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
@@ -173,19 +175,21 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
       //DashBoard for Startup-doctor
       exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
         authenticateJWT(req,res,async()=>{
-          const { district} = req.body;
-        try {
-        // Check if user exists in the database
-        const DoctorsAvai = await Doctor.find({district});
+          const { Email_ID } = req.body;
+      try {
+      // Check if user exists in the database
+      const startup = await Startup.findOne({Email_ID});
+      if (!startup) {
+      // User not found, send error response
+      return res.status(404).json({ success: false, error: 'No Startup Available.' });
+      }
+      const DoctorsAvai = await Farmer.find({district:startup.district});
+
+      if(DoctorsAvai.lenght===0){
+        res.status(404).json({DoctorRetrievalSuccess:false,error: 'No Farmers Available in this Startup\'s district.'})
+      }
       
-        if (!DoctorsAvai) {
-        // User not found, send error response
-      
-        return res.status(404).json({ success: false, error: 'No Doctors Available.' });
-      
-        }
-      
-        res.json({ success: true, message: 'Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
+        res.json({ success: true,Tokensuccess:true,DoctorRetrievalSuccess:true, message: 'Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
         } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
