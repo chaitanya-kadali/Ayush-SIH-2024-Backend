@@ -1,3 +1,8 @@
+const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
+
+
 const bcrypt=require("bcryptjs");  //object for password hashing
 const Doctor = require("../models/doctormodel"); // object of doctor collection
 const Startup = require("../models/startupModel");// object of startup collection
@@ -9,6 +14,48 @@ require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token 
 
+// Set up OAuth 2.0 credentials for Google Drive API
+const oauth2Client = new google.auth.OAuth2(
+  '353752819798- uapdróratcgf80uatkf6adbbf7jdp0ss.apps.googleusercontent.com',
+  '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',
+  'http://localhost:3000/oauth2callback'
+);
+
+// Set the refresh token (You can get this from Google OAuth flow)
+oauth2Client.setCredentials({
+  refresh_token: 'YOUR_REFRESH_TOKEN'
+});
+
+// Create a Google Drive instance
+const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+// Helper function to upload PDF to Google Drive
+async function uploadPDFToDrive(filePath, fileName) {
+  const fileMetadata = {
+    name: fileName,
+    mimeType: 'application/pdf'
+  };
+  const media = {
+    mimeType: 'application/pdf',
+    body: fs.createReadStream(filePath)
+  };
+  const response = await drive.files.create({
+    requestBody: fileMetadata,
+    media: media,
+    fields: 'id, webViewLink'
+  });
+
+  // Make the file public
+  await drive.permissions.create({
+    fileId: response.data.id,
+    requestBody: {
+      role: 'reader',
+      type: 'anyone'
+    }
+  });
+
+  return response.data.webViewLink; // Return the Google Drive shareable link
+}
 
 // Configure Multer to save files to the server
 const storage = multer.diskStorage({
@@ -63,10 +110,11 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Get the file path of the uploaded PDF
-      const pdfFilePath = req.file.path;
 
-      // Create a new doctor with the uploaded PDF's file path
+      // Upload the PDF to Google Drive and get the shareable link
+      const pdfLink = await uploadPDFToDrive(pdfFilePath, pdfFileName);
+
+      // Create a new doctor with the PDF's Google Drive link
       const newDoctor = new Doctor({
         name,
         Email_ID,
@@ -75,15 +123,13 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
         state,
         phone_number,
         language,
-        pdf: pdfFilePath,
-        role:"Doctor",
-        date:date.now()
-      }
-    );
+        pdf: pdfLink,  // Save the PDF link
+        role: "Doctor",
+        date: Date.now()
+      });
 
       // Save the doctor to the database
       await newDoctor.save();
-
       res.status(201).json(newDoctor);
   
       res.status(201).json({data:newDoctor, success: true}); // modified to match frontend
