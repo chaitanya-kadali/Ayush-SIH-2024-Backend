@@ -59,6 +59,18 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
 
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district } = req.body;
+    
+    const Email_Validation=await Licensingauthority.findOne({Email_ID});
+    const PHno_Validation = await Licensingauthority.findOne({mobile_no});
+
+    if(Email_Validation){
+      return res.status(404).json({success :false,error:"Email already exists"});
+    }
+
+    if(PHno_Validation){
+      return res.status(404).json({success :false ,error:"Phone number already exists "});
+    }
+
     // Validate the request body using Joi
     const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district});
 
@@ -86,7 +98,9 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
         OrderDate,
         OrderPdfCopy: pdfFilePath,
         State,
-        district
+        district,
+        role:"Licensing Authority",
+        date:date.now()
       });
 
       // Save the Drug Inspector to the database
@@ -104,32 +118,28 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
 
 exports.LicensingAuthorityLogin = catchAsyncErrors(async (req, res) => {
   const { Email_ID, password } = req.body;
-
+  
   try {
     // Check if LicensingAuthorityDetails exists in the database
     const LicensingAuthorityDetails = await Licensingauthority.findOne({ Email_ID });
 
     if (!LicensingAuthorityDetails) {
+      // LicensingAuthorityDetails not found, send error response
       return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
-    }
-
-    // Check if password exists in the database
-    if (!LicensingAuthorityDetails.password) {
-      return res.status(500).json({ success: false, error: 'Password not set for this user.' });
     }
 
     // Compare passwords
     const passwordMatch = await bcrypt.compare(password, LicensingAuthorityDetails.password);
-    
     if (!passwordMatch) {
+      // Passwords don't match, send error response
       return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: LicensingAuthorityDetails._id, Email_ID: LicensingAuthorityDetails.Email_ID }, // Payload data
-      process.env.JWT_SECRET, // Secret key
-      { expiresIn: '1h' } // Token expiry time (1 hour)
+      { id: LicensingAuthorityDetails._id, Email_ID: LicensingAuthorityDetails.Email_ID },  // Payload data
+      process.env.JWT_SECRET,  // Secret key
+      { expiresIn: '1h' }  // Token expiry time (1 hour)
     );
 
     // Send success response with token and details
@@ -145,7 +155,6 @@ exports.LicensingAuthorityLogin = catchAsyncErrors(async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
-
 
 
     //Dashboard for LiscensingAuthority
