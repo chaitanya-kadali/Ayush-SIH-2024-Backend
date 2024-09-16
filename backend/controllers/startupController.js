@@ -6,78 +6,95 @@ const Doctor = require("../models/doctormodel");  //object of Doctor collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const {Startupschema}=require("../middleware/schemaValidator");  //validate Doctor schema 
 const Status = require("../models/applicationStatus");
+const { GridFSBucket } = require('mongodb');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading
+// Multer setup
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
 
-// Configure Multer to save files to the server
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./files");  // Set the directory where you want to save the files
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
-  }
-});
-
-const upload = multer({ storage: storage });
-
 
 //Registration for the start up
-exports.createStartUp = catchAsyncErrors( async (req, res) => {
+exports.Startup_Dashboard = catchAsyncErrors(async (req, res) => {
+  const uploadMiddleware = upload.fields([
+    { name: 'pdf1', maxCount: 1 },
+    { name: 'pdf2', maxCount: 1 }
+  ]);
 
-  const {Email_ID,password,companyName,address ,city,pinCode,
-    state,district,phone_number}=req.body;
-    const Email_Validation=await Startup.findOne({Email_ID});
-    const PHno_Validation=await Startup.findOne({phone_number});
-    
-    if(Email_Validation){
-      return res.status(404).json({success :false,message:"Email already exists",error:"Email already exists"});
+  uploadMiddleware(req, res, async (err) => {
+    if (err) {
+      return res.status(500).send(err.message);
     }
 
-    if(PHno_Validation){
-      return res.status(404).json({success:false,message:"phone number already exists",error:"phone number already exists"});
+    // Check if both files are uploaded
+    if (!req.files || !req.files['pdf1'] || !req.files['pdf2']) {
+      return res.status(400).send('Both PDF files must be uploaded.');
     }
 
-    // Validate the request body using Joi
-    const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
-      state,district,phone_number});
-  if (error) {
-    // If validation fails, return the error message
-    console.log("schema not validated");
-    return res.status(400).json({ success: false, message:"schema or password not validated", message2: error.details[0].message });
-  }
-  try {
-    
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    // Create new user instance with hashed password
-    const newStatus= new Status({
-      Email_ID:Email_ID,
-      FilledApplicationL:false,
-      FilledAplicationAccepted:false,
-      isDrugInspectorAssigned:false,
-      isDrugInspectorAccepted:false,
-      isLicensed:false
-    })
-    const NewstartUp = new Startup({Email_ID,password:hashedPassword,companyName,address ,city,pinCode,
-      state,district,phone_number,role:"Startup"});
+    const { Email, PANno, GSTno, websiteAddress, certificateNo, CompanyDOI, IssuuingAuthority, IE_code, IE_DOI, feedback } = req.body;
 
-    // Save the user to the database
-    await NewstartUp.save();
-    await newStatus.save();
+    try {
+      // Get the file buffers of the uploaded PDFs
+      const pdf1Buffer = req.files['pdf1'][0].buffer;
+      const pdf2Buffer = req.files['pdf2'][0].buffer;
 
-    res.status(201).json({data:NewstartUp, success:true,message:"Startup successfully created"});
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(400).json({ error: error.message , success:false});
-  }
+      const db = mongoose.connection.db;
+      const bucket = new GridFSBucket(db);
+
+      // Upload pdf1 to GridFS
+      const uploadStream1 = bucket.openUploadStream(req.files['pdf1'][0].originalname);
+      uploadStream1.end(pdf1Buffer);
+
+      // Upload pdf2 to GridFS
+      const uploadStream2 = bucket.openUploadStream(req.files['pdf2'][0].originalname);
+      uploadStream2.end(pdf2Buffer);
+
+      // Store file IDs and other details after uploads complete
+      uploadStream1.on('finish', () => {
+        uploadStream2.on('finish', async () => {
+          // Create a new Startup Dashboard model with the uploaded PDFs' file IDs
+          const newStartupdashModel = new StartupdashModel({
+            Email,
+            PANno,
+            GSTno,
+            websiteAddress,
+            certificateNo,
+            CompanyDOI,
+            IssuuingAuthority,
+            IE_code,
+            IE_DOI,
+            pdf1: uploadStream1.id, // Save the GridFS file ID for pdf1
+            pdf2: uploadStream2.id, // Save the GridFS file ID for pdf2
+            feedback,
+            role: "Startup",
+            date: Date.now()
+          });
+
+          // Save the Startup Dashboard to the database
+          await newStartupdashModel.save();
+          res.status(201).json({ success: true, message: 'Dashboard details successfully saved', newStartupdashModel: newStartupdashModel });
+        });
+        
+        uploadStream2.on('error', (err) => {
+          res.status(500).send('Error uploading second PDF: ' + err.message);
+        });
+      });
+
+      uploadStream1.on('error', (err) => {
+        res.status(500).send('Error uploading first PDF: ' + err.message);
+      });
+
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(400).json({ error: error.message });
+    }
+  });
 });
-
 //login for Startup
 
 exports.StartupLogin =catchAsyncErrors(async (req,res)=>{

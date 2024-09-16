@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 //startup  model
- const DINotificationSchema = mongoose.Schema({
-    DI_Email:{
+ const LANotificationSchema = mongoose.Schema({
+    LA_Email:{
         type:String,
         required:true
     },
@@ -12,4 +12,4 @@ const mongoose = require("mongoose");
     date:String
 });
 
-module.exports = mongoose.model("DI_Notification",DINotificationSchema);
+module.exports = mongoose.model("LA_Notification",LANotificationSchema);

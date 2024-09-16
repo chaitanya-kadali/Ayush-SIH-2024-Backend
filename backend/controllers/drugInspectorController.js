@@ -4,32 +4,22 @@ const Startup = require("../models/startupModel");// object of startup collectio
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
 const {Druginspectorschema}=require("../middleware/schemaValidator");
+const { GridFSBucket } = require('mongodb');
+const mongoose = require('mongoose');
 const multer = require("multer");  //object for pdf uploading
+// Multer setup
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
 
-// Configure Multer to save files to the server
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./files");  // Set the directory where you want to save the files
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
-  }
-});
-const upload = multer({ storage: storage });
-
-
 // Registration for doctor
 exports.createDruginspector = catchAsyncErrors(async (req, res) => {
+  const uploadMiddleware = upload.single('pdf');
 
-    const uploadMiddleware = upload.single('pdf');
-
-  // Invoke the multer middleware manually
   uploadMiddleware(req, res, async (err) => {
     if (err) {
       return res.status(500).send(err.message);
@@ -38,58 +28,70 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
       return res.status(400).send('No file uploaded.');
     }
 
-    const { name, Email_ID, password,district, state, phone_number, language } = req.body;
+    const { name, Email_ID, password, district, state, phone_number, language } = req.body;
 
-    const Email_Validation=await Druginspector.findOne({Email_ID});
-    const PHno_Validation= await Druginspector.findOne({phone_number});
-    if(Email_Validation){
-      return res.status(404).json({success :false,error:"Email_ID already exists"});
+    const Email_Validation = await Druginspector.findOne({ Email_ID });
+    const PHno_Validation = await Druginspector.findOne({ phone_number });
+
+    if (Email_Validation) {
+      return res.status(404).json({ success: false, error: "Email_ID already exists" });
     }
 
-    if(PHno_Validation){
-      return res.status(404).json({success :false ,error:"Phone number already exists "});
+    if (PHno_Validation) {
+      return res.status(404).json({ success: false, error: "Phone number already exists" });
     }
 
     // Validate the request body using Joi
-    const { error } = Druginspectorschema.validate({ name, Email_ID, password, district, state, phone_number, language});
+    const { error } = Druginspectorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
 
-  if (error) {
-    // If validation fails, return the error message
-    return res.status(400).json({ success: false, error:error.details[0].message});
-  }
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message });
+    }
+
     try {
       // Hash the password
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Get the file path of the uploaded PDF
-      const pdfFilePath = req.file.path;
+      // Upload PDF to GridFS
+      const db = mongoose.connection.db;
+      const bucket = new GridFSBucket(db);
+      const pdfBuffer = req.file.buffer;
+      const uploadStream = bucket.openUploadStream(req.file.originalname);
 
-      // Create a new doctor with the uploaded PDF's file path
-      const newDruginspector = new Druginspector({
-        name,
-        Email_ID,
-        password: hashedPassword,
-        district,
-        state,
-        phone_number,
-        language,
-        pdf: pdfFilePath,
-        role:"Drug Inspector",
-        date:date.now()
-      }
-    );
+      uploadStream.end(pdfBuffer);
 
-      // Save the doctor to the database
-      await newDruginspector.save();
-  
-      res.status(201).json({data:newDruginspector, success: true}); // modified to match frontend
+      uploadStream.on('finish', async () => {
+        // Create a new Druginspector with the uploaded PDF's file ID
+        const newDruginspector = new Druginspector({
+          name,
+          Email_ID,
+          password: hashedPassword,
+          district,
+          state,
+          phone_number,
+          language,
+          pdf: uploadStream.id, // Save the GridFS file ID
+          role: "Drug Inspector",
+          date: Date.now()
+        });
+
+        // Save the Druginspector to the database
+        await newDruginspector.save();
+
+        res.status(201).json({ data: newDruginspector, success: true });
+      });
+
+      uploadStream.on('error', (err) => {
+        res.status(500).send('Error uploading PDF: ' + err.message);
+      });
+
     } catch (error) {
       console.error('Error:', error);
-      res.status(400).json({ error: error.message,success: false });
+      res.status(400).json({ error: error.message, success: false });
     }
   });
-  });
+});
 
 
   //Login for doctor
