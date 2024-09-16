@@ -4,7 +4,6 @@ const StartupdashModel=require("../models/StartupDashModel");  //object for Star
 const Farmer = require("../models/farmerModel");  //object of Farmer collection
 const Doctor = require("../models/doctormodel");  //object of Doctor collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
 const {Startupschema}=require("../middleware/schemaValidator");  //validate Doctor schema 
 require('dotenv').config();
 
@@ -90,8 +89,8 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
           process.env.JWT_SECRET,  // Secret key
           { expiresIn: '4h' }  // Token expiry time (4 hour) changed to 4 hours
         );
-
-        res.json({ success: true, message: 'Login successful',token: token, StartupDetails: StartupDetails });
+        
+        res.status(201).json({ success: true, message: 'Login successful',token: token, StartupDetails: StartupDetails });
     
     } catch (error) {
     console.error('Error during login:', error);
@@ -157,15 +156,11 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
   });
 
   //DashBoard for Startup-farmer
-  exports.Startup_farmer_tab_and_token =catchAsyncErrors(async (req,res)=>
+  exports.Startup_farmer_tab =catchAsyncErrors(async (req,res)=>
   {
           //  Authenticate user BEFORE proceeding 
           // so considering that if token authentication is false then further retrieval of farmer datails and other BELOW stuff WILLN'T happen
        console.log("line 152 varuku called");
-          authenticateJWT(req,res); // seperating the components as a doubt
-
-          console.log("line 155 varuku called");
-
             const { Email_ID } = req.body;
           try {
                 // Check if user exists in the database
