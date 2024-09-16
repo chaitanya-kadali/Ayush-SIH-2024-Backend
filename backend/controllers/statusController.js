@@ -5,11 +5,68 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by defaul
 
 // --/isDrugInspectorAssigned-false
 
-exports.isAssigned = catchAsyncErrors( async (req, res) => {    // return {success , pendingList}
+exports.isNotAssigned = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
     // GET function
+    console.log("called");
     try{
+        console.log("called");
         const statusList = await Status.find({ isDrugInspectorAssigned: false });
         res.status(200).json({ success: true,pendingList:statusList, message: 'Startup Details for farmer'});
+    } catch (error) {
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+//  ---  /isDrugInspectorAssigned-true
+
+exports.isAssigned = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
+    // GET function
+    console.log("called not 24");
+    try{
+
+        const statusList = await Status.find({ isDrugInspectorAssigned: true });
+        res.status(200).json({ success: true,assignedList:statusList, message: 'Startup Details for farmer'});
+    } catch (error) {
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+// isDrugInspectorAccepted-true
+exports.isAccepted = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
+    // GET function
+    console.log("called not 24");
+    try{
+
+        const statusList = await Status.find({ isDrugInspectorAccepted: true });
+        res.status(200).json({ success: true,acceptedList:statusList, message: 'Startup Details for farmer'});
+    } catch (error) {
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+// isDrugInspectorAccepted-false
+exports.isNotAccepted = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
+    // GET function
+    console.log("called not 24");
+    try{
+
+        const statusList = await Status.find({ isDrugInspectorAccepted: false });
+        res.status(200).json({ success: true,rejectedList:statusList, message: 'Startup Details for farmer'});
+    } catch (error) {
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+// isLicensed-true
+exports.isLicensed = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
+    // GET function
+    console.log("called not 24");
+    try{
+
+        const statusList = await Status.find({ isLicensed: true });
+        res.status(200).json({ success: true,licensedList:statusList, message: 'Startup Details for farmer'});
     } catch (error) {
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });

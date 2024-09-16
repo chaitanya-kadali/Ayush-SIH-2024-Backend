@@ -287,3 +287,20 @@ exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
+
+
+// getbasic details
+exports.StartupBaisic= catchAsyncErrors(async (req, res) => {
+  const { Email } = req.body;
+  
+  try {
+    // Find the startup by email
+    const StartUp = await Startup.findOne({ Email });
+
+    // Return a success response
+    res.status(200).json({ success: true, message: 'Startup found ', basicdata: StartUp });
+  } catch (error) {
+    console.error('Error during:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
