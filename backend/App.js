@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose=require('mongoose');
 const path = require('path'); // to use __dirname
+const session = require('express-session');
 
 require('dotenv').config(); // to access the values .env file
 
