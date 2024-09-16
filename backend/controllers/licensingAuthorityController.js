@@ -19,14 +19,10 @@ const upload = multer({ storage: storage });
 
 // Registration for LiscensingAuthority
 exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
-  const uploadMiddleware = upload.single('OrderPdfCopy');
-
-  uploadMiddleware(req, res, async (err) => {
-    if (err) {
-      console.log("Multer-related error");
-      return res.status(500).json({ error: err.message, success: false, message: "Multer-related error" });
-    }
+  console.log("AAAAABBBB 22 ->");
+   
     if (!req.file) {
+      console.log("AAAAABBBB 25->");
       return res.status(400).send('No file uploaded.'); // No file uploaded error
     }
 
@@ -43,13 +39,14 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
     if (PHno_Validation) {
       return res.status(404).json({ success: false, error: "Phone number already exists", message: "Phone number already exists" });
     }
-
+    console.log("AAAAABBBB 42 ->");
     // Validate the request body using Joi
-    const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
+    // const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
 
-    if (error) {
-      return res.status(400).json({ success: false, error: error.details[0].message, message: "schema validation fails" });
-    }
+    // if (error) {
+    //   console.log("AAAAABBBB 47 ->");
+    //   return res.status(400).json({ success: false, error: error.details[0].message, message: "schema validation fails" });
+    // }
 
     try {
       // Hash the password for security
@@ -94,7 +91,7 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
       console.error('Error:', error);
       res.status(400).json({ error: error.message, success: false, message: "Error at backend" });
     }
-  });
+  
 });
 
 

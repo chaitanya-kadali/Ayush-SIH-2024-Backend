@@ -137,10 +137,7 @@
 
     Fill Application In Startup Dashboard 
     URL: /startup-dashboard  rename to /startup-fillapplication 
-<<<<<<< HEAD
-=======
 
->>>>>>> 65ad7a19a90bcc9d63dbe18549936cf94c8384ed
     Usage: Endpoint for passig data to fillig up application.
     Input: Startup Dash_details like GST no,PAN no.... and two pdf's  .
     Output: returns 1. Startup-Dash_details-details,
