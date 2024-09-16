@@ -31,7 +31,9 @@ if (!mongoUri) {
 
 mongoose.connect(mongoUri)
 .then(() => {
+
     console.log('Connected to MongoDB Atlas CLOUD !!');
+
 })
 .catch((error) => {
     console.error('Error connecting to MongoDB Atlas:', error);

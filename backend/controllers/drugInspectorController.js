@@ -39,6 +39,17 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
     }
 
     const { name, Email_ID, password,district, state, phone_number, language } = req.body;
+
+    const Email_Validation=await Druginspector.findOne({Email_ID});
+    const PHno_Validation= await Druginspector.findOne({phone_number});
+    if(Email_Validation){
+      return res.status(404).json({success :false,error:"Email_ID already exists"});
+    }
+
+    if(PHno_Validation){
+      return res.status(404).json({success :false ,error:"Phone number already exists "});
+    }
+
     // Validate the request body using Joi
     const { error } = Druginspectorschema.validate({ name, Email_ID, password, district, state, phone_number, language});
 
@@ -63,7 +74,9 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
         state,
         phone_number,
         language,
-        pdf: pdfFilePath
+        pdf: pdfFilePath,
+        role:"Drug Inspector",
+        date:date.now()
       }
     );
 

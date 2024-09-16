@@ -13,6 +13,12 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
 // Registration for Farmer
   exports.createFarmer = catchAsyncErrors( async (req, res) => {
   const { name, phone_number, password, district, state, crop_name, language } = req.body;
+  
+  PHno_Validation=await Farmer.findOne({phone_number});
+    
+    if(PHno_Validation){
+      return res.status(404).json({success :false,error:"phone number already exists"});
+    }
 
   // Validate the request body using Joi
   const { error } = Farmerschema.validate({ name, phone_number, password, district, state, crop_name, language });
@@ -42,7 +48,9 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
       district,
       state,
       crop_name,
-      language
+      language,
+      role:"Farmer",
+      date:date.now()
     });
 
     // Save the newFarmer to the database
