@@ -7,8 +7,7 @@ const {Doctorschema}=require("../middleware/schemaValidator");
 const multer = require("multer");  //object for pdf uploading
 require('dotenv').config();
 
-const jwt = require('jsonwebtoken');  //object to Generate JWT token
-const JWT_SECRET="secret_key_for_StartupPortal";
+const jwt = require('jsonwebtoken');  //object to Generate JWT token 
 
 
 // Configure Multer to save files to the server
@@ -78,7 +77,6 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
       res.status(400).json({ error: error.message,success: false });
     }
   });
-
   });
 
 
@@ -91,24 +89,25 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
 
     if (!DoctorDetails) {
     // Doctor Details not found, send error response
-  
+
     return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
-  
+
     }
     // Compare passwords
     const passwordMatch = await bcrypt.compare(password, DoctorDetails.password);
     if (!passwordMatch) {
+
     // Passwords don't match, send error response
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
     const token = jwt.sign(
-      { id: Doctor._id, Email_ID: Doctor.Email_ID },  // Payload data
+      { id: DoctorDetails._id, Email_ID: DoctorDetails.Email_ID },  // Payload data
       process.env.JWT_SECRET,  // Secret key
       { expiresIn: '1h' }  // Token expiry time (1 hour)
     );
 
     res.json({ success: true, message: 'Login successful' ,token: token, DoctorDetails: DoctorDetails });
-    } 
+    }
     catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -119,18 +118,21 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
   //Doctor Dashboard
   exports.DoctorDashboard =catchAsyncErrors(async (req,res)=>{
     authenticateJWT(req,res,async()=>{
-      const { District} = req.body;
+    const { Email_ID } = req.body;
     try {
     // Check if startups exists in the database
-    const StartupsAvai = await Startup.find({District});
-  
-    if (!StartupsAvai) {
+    const doctor = await Doctor.findOne({Email_ID});
 
-    return res.status(404).json({ success: false, error: 'No Startups Available.' });
+    if(!doctor){
+      return res.status(404).json({success:false,error:"Doctor not found"});
+    }
+    const StartupsAvai=await Startup.find({district: doctor.district});
+    if (StartupsAvai.lenght===0) {
+    
+    return res.status(404).json({ StartupRetrievalsuccess: false, error: 'No Startups Available.' });
   
     }
-  
-    res.json({ success: true, message: 'Startup Details for doctor', StartupsAvai: StartupsAvai});
+    res.json({ success: true, Tokensuccess:true, StartupRetrievalsuccess: true, message: 'Startup Details for doctor', StartupsAvai: StartupsAvai});
     } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });

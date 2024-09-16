@@ -16,26 +16,29 @@ app.use(cors());
 
 
 // MongoDB Atlas Connection
-const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
+// const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
 
-if (!mongoUri) {
-    console.error('MongoDB URI not defined in .env file.');
-    process.exit(1);
-}
+// if (!mongoUri) {
+//     console.error('MongoDB URI not defined in .env file.');
+//     process.exit(1);
+// }
 
-mongoose.connect(mongoUri)
-.then(() => {
-    console.log('Connected to MongoDB Atlas!');
-})
-.catch((error) => {
-    console.error('Error connecting to MongoDB Atlas:', error);
-});
+// mongoose.connect(mongoUri)
+// .then(() => {
+//     console.log('Connected to MongoDB Atlas!');
+// })
+// .catch((error) => {
+//     console.error('Error connecting to MongoDB Atlas:', error);
+// });
+
+mongoose.connect('mongodb://localhost:27017/aayushdb');
 
 
 // importings of persons
   const farmer = require("./routes/farmerRoute");
   const doctor = require("./routes/doctorRoute");
   const startup = require("./routes/startUpRoute");
+  const liscensingAuthority = require("./routes/LiscensingAuthorityRoute");
   const drugInspector = require("./routes/drugInspectorRoute");
 
 // importing apis
@@ -44,10 +47,11 @@ mongoose.connect(mongoUri)
   const sendEmail = require("./routes/sendEmailRoute")
 
 // assigning the persons
-  app.use("/api",drugInspector);
   app.use("/api",farmer);
   app.use("/api",doctor);
   app.use("/api",startup);
+  app.use("/api",liscensingAuthority);
+  app.use("/api",drugInspector);
 
 // assigning the apis
 app.use("/api",chat);

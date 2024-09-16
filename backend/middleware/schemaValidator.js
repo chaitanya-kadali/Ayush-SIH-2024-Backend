@@ -4,18 +4,18 @@ const Joi=require('joi');
 const Doctorschema = Joi.object({
     name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
-    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters
+    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,30}$')).required(),  // Password with alphanumeric characters
     district: Joi.string().required(),   // District is a required string
     state: Joi.string().required(),      // State is a required string
     phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),  // Phone number as a 10-digit integer
     language: Joi.string().optional()    // Language is optional
   });
 
-  //DrugInspector schema validator
-  const Druginspectorschema = Joi.object({
+  //LiscensingAuthority schema validator
+  const LiscensingAuthorityschema = Joi.object({
     name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
-    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters
+    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,30}$')).required(),  // Password with alphanumeric characters
     mobile_no: Joi.number().integer().min(1000000000).max(9999999999).required(),  // Mobile number as a 10-digit integer
     designation: Joi.string().required(),  // Designation is a required string
     Qualification: Joi.string().required(),  // Qualification is a required string
@@ -29,7 +29,7 @@ const Doctorschema = Joi.object({
   const Farmerschema = Joi.object({
     name: Joi.string().min(3).required(),
     phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),
-    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,30}$')).required(),
     district: Joi.string().required(),
     state: Joi.string().required(),
     crop_name: Joi.string().required(),
@@ -39,7 +39,7 @@ const Doctorschema = Joi.object({
 //Startup schema validator
 const Startupschema = Joi.object({
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
-    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),  // Password with alphanumeric characters, min 8 characters
+    password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,30}$')).required(),  // Password with alphanumeric characters, min 8 characters
     companyName: Joi.string().min(3).required(),  // Company name must be a string, at least 3 characters long
     address: Joi.string().required(),  // Address must be a string and is required
     city: Joi.string().required(),  // City must be a string and is required
@@ -49,6 +49,17 @@ const Startupschema = Joi.object({
     phone_number: Joi.number().integer().min(1000000000).max(9999999999).required()  // Phone number as a 10-digit integer
   });
 
+  //Druginspector schema validator
+const Druginspectorschema = Joi.object({
+  name: Joi.string().min(3).required(),   // Name must be a string, at least 3 characters long
+  Email_ID: Joi.string().email().required(),  // Email must be a valid email format
+  password: Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,30}$')).required(),  // Password with alphanumeric characters
+  district: Joi.string().required(),   // District is a required string
+  state: Joi.string().required(),      // State is a required string
+  phone_number: Joi.number().integer().min(1000000000).max(9999999999).required(),  // Phone number as a 10-digit integer
+  language: Joi.string().optional()    // Language is optional
+});
 
 
-  module.exports = { Doctorschema, Druginspectorschema, Farmerschema, Startupschema };
+
+  module.exports = { Doctorschema, LiscensingAuthorityschema, Farmerschema, Startupschema,Druginspectorschema };
