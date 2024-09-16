@@ -29,26 +29,27 @@ const upload = multer({ storage: storage });
 
 //Registration for the start up
 exports.createStartUp = catchAsyncErrors( async (req, res) => {
+
   const {Email_ID,password,companyName,address ,city,pinCode,
     state,district,phone_number}=req.body;
     const Email_Validation=await Startup.findOne({Email_ID});
     const PHno_Validation=await Startup.findOne({phone_number});
     
     if(Email_Validation){
-      return res.status(404).json({success :false,error:"Email already exists"});
+      return res.status(404).json({success :false,message:"Email already exists",error:"Email already exists"});
     }
 
     if(PHno_Validation){
-      return res.status(404).json({success:false,error:"phone number already exists"});
+      return res.status(404).json({success:false,message:"phone number already exists",error:"phone number already exists"});
     }
+
     // Validate the request body using Joi
     const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
       state,district,phone_number});
-
   if (error) {
     // If validation fails, return the error message
     console.log("schema not validated");
-    return res.status(400).json({ success: false, message:"schema not validated", message2: error.details[0].message });
+    return res.status(400).json({ success: false, message:"schema or password not validated", message2: error.details[0].message });
   }
   try {
     

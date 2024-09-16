@@ -16,7 +16,7 @@ const router = express.Router();
 router.route("/licensingAuthority-reg").post(asyncMiddleware(createLicensingAuthority));
 
 //Login for liscensingAuthority
-router.route("/licensingAuthority-login").post(asyncMiddleware(LicensingAuthorityLogin));
+router.route("/authority-login").post(asyncMiddleware(LicensingAuthorityLogin));
 
 //Dashboard for liscensingAuthority
 router.route("/licensingAuthority-dashboard").post(asyncMiddleware(LicensingAuthorityDashboard));
