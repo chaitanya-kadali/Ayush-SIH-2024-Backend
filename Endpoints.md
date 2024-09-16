@@ -65,9 +65,9 @@
     Output: returns Corresponding details of Farmer ,success(true/false)
 
     Farmer Dashboard
-    URL: /farmer-dashboard
+    URL: /farmer-dashboard  rename to /startups-at-farmersdistrict
     Usage: Endpoint for accessing the farmer dashboard.
-    Input: Farmer district .
+    Input: Farmer email id .
     Output: returns success(true/false),
             Tokensuccess(True/False),
             StartupRetrievalsuccess(True/False),
@@ -89,19 +89,18 @@
 
 
     Startup Dashboard
-    URL: /startup-dashboard
+    URL: /startup-dashboard  rename to /startup-fillapplication 
     Usage: Endpoint for accessing the startup dashboard.
     Input: Startup Dash_details like GST no,PAN no.... and two pdf's  .
     Output: returns Startup Dash_details details,success(true/false)
 
     Startup Farmer Dashboard
-    URL: /startupf-dashboard
+    URL: /farmertab-in-startup-and-token (renamed)
     Usage: Endpoint for accessing the startup farmer dashboard.
-    Input: Startup district .
-    Output: returns success(true/false),
-            Tokensuccess(True/False),
+    Input: Startup email id.
+    Output: returns Tokensuccess(True/False),
             FarmerRetrievalsuccess(True/False),
-            Available Farmerdetails in that district
+            Available-Farmerdetails in that district
     
 
     Startup Doctor Dashboard
@@ -144,3 +143,9 @@
     Usage: Endpoint for handling chat control.
     Input: request message data  .
     Output: returns response data from chatbot,success(true/false).
+
+# Status TrackPad and License-Authority + Drug Inspector Connector
+    Status of STARTUP Application Process
+    URL 1 : 
+    Input :
+    Output : 
