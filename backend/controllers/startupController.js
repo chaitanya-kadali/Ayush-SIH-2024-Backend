@@ -145,10 +145,15 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
   });
 
   //DashBoard for Startup-farmer
-    exports.Startup_farmer_tab_and_token =catchAsyncErrors(async (req,res)=>{
+  exports.Startup_farmer_tab_and_token =catchAsyncErrors(async (req,res)=>
+  {
           //  Authenticate user BEFORE proceeding 
           // so considering that if token authentication is false then further retrieval of farmer datails and other BELOW stuff WILLN'T happen
-        authenticateJWT(req,res,async()=>{
+       console.log("line 152 varuku called");
+          authenticateJWT(req,res); // seperating the components as a doubt
+
+          console.log("line 155 varuku called");
+
             const { Email_ID } = req.body;
           try {
                 // Check if user exists in the database
@@ -158,22 +163,23 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
                   return res.status(404).json({ startupfound: false, error: 'No Startups Available. with the sent email' }); // no possible chances for this to happen
                 }
                 const FarmersAvail = await Farmer.find({district:startup.district});
-                if(FarmerAvail.length===0){
-                  res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startup\'s district.'}) // status should be 200 as no farmer is not an error
+                if(FarmersAvail.length===0){
+                  console.log("No Farmers Available in this Startups district.");
+                  res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startups district.'}) // status should be 200 as no farmer is not an error
                 }
 
-                res.status(200).json({farmerRetrievalSuccess:true, Farmerslist: FarmersAvai });// considering tokensuccess : true was already sent before
+                res.status(200).json({farmerRetrievalSuccess:true, Farmerslist: FarmersAvail });// considering tokensuccess : true was already sent before
             } catch (error) {
                   console.error('Error during farmer data fetch at startup dashboard:', error);
                   res.status(500).json({ success: false, error: 'Internal server error' });
              }
-        })
+        
     });
 
       //DashBoard for Startup-doctor
-      exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
-        authenticateJWT(req,res,async()=>{
-          const { Email_ID } = req.body;
+  exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
+      const { Email_ID } = req.body;
+
       try {
       // Check if user exists in the database
       const startup = await Startup.findOne({Email_ID});
@@ -181,21 +187,21 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
       // User not found, send error response
       return res.status(404).json({ success: false, error: 'No Startup Available.' });
       }
-      const DoctorsAvai = await Farmer.find({district:startup.district});
+      const DoctorsAvai = await Doctor.find({district:startup.district});
 
       if(DoctorsAvai.lenght===0){
         res.status(404).json({DoctorRetrievalSuccess:false,error: 'No Farmers Available in this Startup\'s district.'})
       }
       
-        res.json({ success: true,Tokensuccess:true,DoctorRetrievalSuccess:true, message: 'Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
+        res.json({ success: true,DoctorRetrievalSuccess:true, message: 'Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
         } catch (error) {
         console.error('Error during doctor dashboard:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
          }
-        })
-      });
+  });
+      
   
-// Uploading Feedback from DrugInspector into Database
+// Uploading Feedback from liscensingAuthority into Database
 exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
   const { Email, feedback } = req.body;
   
@@ -227,7 +233,7 @@ exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
   }
 });
 
-// Uploading Feedback from DrugInspector into Database
+// Uploading Feedback from liscensingAuthority into Database
 exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
   const { Email } = req.body;
   

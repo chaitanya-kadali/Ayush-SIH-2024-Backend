@@ -86,3 +86,12 @@
 }
 
 
+// application status
+{
+   "isfilledApplication" : true,
+	"isfilledAplicationAccepted" : true,  (for frontend : if accepted is false the whole stuff should get RED from here to END.)
+	"isdruginspectorAssigned": true,
+	"isDruginspectorAccepted" : true,  (for frontend : if accepted is false the whole stuff should get RED from here to end)
+	"finallycertified": true, 
+}
+
