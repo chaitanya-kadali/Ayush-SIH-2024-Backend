@@ -5,115 +5,96 @@ const LA_Notification=require("../models/LA_Notification");  //object of DI_Noti
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
 const {LicensingAuthorityschema}=require("../middleware/schemaValidator"); 
+const { GridFSBucket } = require('mongodb');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
-
-
-// Configure Multer with file type and size restrictions
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./files"); // Set the directory where you want to save the files
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname); // Set the file name to save
-  }
-});
-
-// File validation: Limit to PDF and file size
-const fileFilter = (req, file, cb) => {
-  // Only accept PDF files
-  const fileType = file.mimetype;
-  if (fileType === 'application/pdf') {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only PDF files are allowed."), false);
-  }
-};
-
-// Set file size limit to 5MB
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 1024 * 1024 * 5 } // 5MB file size limit
-});
-
+// Multer setup
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // Registration for LiscensingAuthority
 exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
-  // Multer middleware for handling single file upload
-  // const uploadMiddleware = upload.single('OrderPdfCopy');
+  const uploadMiddleware = upload.single('OrderPdfCopy');
 
-  // // Invoke the multer middleware manually
-  // uploadMiddleware(req, res, async (err) => {
+  uploadMiddleware(req, res, async (err) => {
     if (err) {
-      console.log("Multer-related error")
-      return res.status(500).json({error:err.message, success:false, message:"Multer-related error"}); // Multer-related error
+      console.log("Multer-related error");
+      return res.status(500).json({ error: err.message, success: false, message: "Multer-related error" });
     }
-    // if (!req.file) {
-    //   return res.status(400).send('No file uploaded.'); // No file uploaded error
-    // }
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.'); // No file uploaded error
+    }
 
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district } = req.body;
-    
-    const Email_Validation=await Licensingauthority.findOne({Email_ID});
-    const PHno_Validation = await Licensingauthority.findOne({mobile_no});
 
-    if(Email_Validation){
-      return res.status(404).json({success :false,error:"Email already exists", message:"Email already exists"});
+    const Email_Validation = await Licensingauthority.findOne({ Email_ID });
+    const PHno_Validation = await Licensingauthority.findOne({ mobile_no });
+
+    if (Email_Validation) {
+      return res.status(404).json({ success: false, error: "Email already exists", message: "Email already exists" });
     }
 
-    if(PHno_Validation){
-      return res.status(404).json({success :false ,error:"Phone number already exists ", message:"Phone number already exists "});
+    if (PHno_Validation) {
+      return res.status(404).json({ success: false, error: "Phone number already exists", message: "Phone number already exists" });
     }
 
     // Validate the request body using Joi
-    // const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district});
+    const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
 
-    // if (error) {
-    //   // If validation fails, return the error message
-    //   console.log("schema validation fails");
-    //   return res.status(400).json({ success: false, error: error.details[0].message,message:"schema validation fails " });
-    // }
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message, message: "schema validation fails" });
+    }
+
     try {
       // Hash the password for security
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Get the file path of the uploaded PDF
-      // const pdfFilePath = req.file.path;
+      // Upload PDF to GridFS
+      const db = mongoose.connection.db;
+      const bucket = new GridFSBucket(db);
+      const pdfBuffer = req.file.buffer;
+      const uploadStream = bucket.openUploadStream(req.file.originalname);
 
-      // Create a new Drug Inspector with the uploaded PDF's file path
-      const newLicensingAuthority = new Licensingauthority({
-        name, 
-        Email_ID, 
-        password: hashedPassword,
-        mobile_no,
-        designation,
-        Qualification,
-        OrderReferenceNo,
-        OrderDate,
-        OrderPdfCopy: "pdfFilePath",
-        State,
-        district,
-        role:"Licensing Authority",
-        date:Date.now()
+      uploadStream.end(pdfBuffer);
+
+      uploadStream.on('finish', async () => {
+        // After the PDF is uploaded, save the Licensing Authority record
+        const newLicensingAuthority = new Licensingauthority({
+          name,
+          Email_ID,
+          password: hashedPassword,
+          mobile_no,
+          designation,
+          Qualification,
+          OrderReferenceNo,
+          OrderDate,
+          OrderPdfCopy: uploadStream.id, // Save the GridFS file ID
+          State,
+          district,
+          role: "Licensing Authority",
+          date: Date.now()
+        });
+
+        await newLicensingAuthority.save();
+        res.status(201).json({ data: newLicensingAuthority, success: true, message: "Successfully signed up!" });
       });
 
-      // Save the Licensing authority  to the database
-      await newLicensingAuthority.save();
+      uploadStream.on('error', (err) => {
+        res.status(500).send('Error uploading PDF: ' + err.message);
+      });
 
-      res.status(201).json({ data: newLicensingAuthority, success: true, message:"successfully Signed Up ! " });
     } catch (error) {
       console.error('Error:', error);
-      res.status(400).json({ error: error.message, success: false, message:"error at backend" });
+      res.status(400).json({ error: error.message, success: false, message: "Error at backend" });
     }
-  // });
+  });
 });
 
 
