@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const express=require("express");
 const app=express();
+const { GridFSBucket } = require('mongodb');
+const mongoose = require('mongoose');
 
 const bcrypt = require('bcryptjs'); // object for password hashing
 const Doctor = require("../models/doctormodel"); // object of doctor collection
@@ -15,19 +17,7 @@ require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token 
 
-
-
-
-// Configure Multer to save files to the server
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./files");  // Set the directory where you want to save the files
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);  // Set the file name to save
-  }
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Registration for doctor
@@ -69,23 +59,34 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      const pdfFilePath = req.file.path;
+      const db = mongoose.connection.db;
+      const bucket = new GridFSBucket(db);
+      const pdfBuffer = req.file.buffer;
+      const uploadStream = bucket.openUploadStream(req.file.originalname);
 
-      const newDoctor = new Doctor({
-        name,
-        Email_ID,
-        password: hashedPassword,
-        district,
-        state,
-        phone_number,
-        language,
-        pdf: pdfFilePath,  // Save the PDF link
-        role: "Doctor"
+      uploadStream.end(pdfBuffer);
+
+      uploadStream.on('finish', async () => {
+        // After the PDF is uploaded, save the doctor record
+        const newDoctor = new Doctor({
+          name,
+          Email_ID,
+          password: hashedPassword,
+          district,
+          state,
+          phone_number,
+          language,
+          pdf: uploadStream.id, // Save the GridFS file ID
+          role: "Doctor"
+        });
+
+        await newDoctor.save();
+        res.status(201).json(newDoctor);
       });
 
-      // Save the doctor to the database
-      await newDoctor.save();
-      res.status(201).json(newDoctor);
+      uploadStream.on('error', (err) => {
+        res.status(500).send('Error uploading PDF: ' + err.message);
+      });
 
     } catch (error) {
       console.error('Error:', error);
