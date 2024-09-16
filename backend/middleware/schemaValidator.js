@@ -43,7 +43,7 @@ const Startupschema = Joi.object({
     Email_ID: Joi.string().email().required(),  // Email must be a valid email format
     password: Joi.string().min(8).max(30).pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]{8,30}$')).required(),
   // Password with alphanumeric characters, min 8 characters
-    companyName: Joi.string().min(3).required(),  // Company name must be a string, at least 3 characters long
+    companyName: Joi.string().min(2).required(),  // Company name must be a string, at least 3 characters long
     address: Joi.string().required(),  // Address must be a string and is required
     city: Joi.string().required(),  // City must be a string and is required
     pinCode: Joi.number().integer().min(100000).max(999999).required(),  // Pin code as a 6-digit integer
