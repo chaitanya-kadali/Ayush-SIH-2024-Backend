@@ -125,3 +125,10 @@ const cleanUpImages = (imageDir) => {
     });
   });
 };
+
+const router = express.Router();
+
+// pdf quality check route
+router.route('/pdfQualityCheck').post(asyncMiddleware(PdfQualityCheck)); 
+
+module.exports = router;

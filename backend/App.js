@@ -56,6 +56,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
   const sendEmail = require("./routes/sendEmailRoute")
   const tokenVerify = require("./routes/tokenVerifyRoute");
   const status = require("./routes/statusRoute");
+  const pdfQualityCheck=require("./routes/PdfQualityCheck");
 
 // assigning the persons
   app.use("/api",farmer);
@@ -70,6 +71,7 @@ app.use("/api",district);
 app.use("/api",sendEmail);
 app.use("/api",tokenVerify);
 app.use("/api",status);
+app.use("/api",pdfQualityCheck);
 
 // Serve the static files (HTML, CSS, JS)
 app.use(express.static('public'));

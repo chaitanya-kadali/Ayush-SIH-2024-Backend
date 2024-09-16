@@ -30,6 +30,8 @@
     "nodemailer-sendinblue-transport": "^2.0.1",
     "nodemon": "^3.1.0",
     "openai": "^4.57.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "pdf-poppler": "^0.2.1",
+    "tesseract.js": "^5.1.1"
   }
 }
