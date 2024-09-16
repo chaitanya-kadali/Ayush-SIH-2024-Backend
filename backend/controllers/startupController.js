@@ -46,9 +46,11 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
 
   if (error) {
     // If validation fails, return the error message
-    return res.status(400).json({ success: false, error: error.details[0].message });
+    console.log("schema not validated");
+    return res.status(400).json({ success: false, message:"schema not validated", message2: error.details[0].message });
   }
   try {
+    // check if user already exist ???????????????
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     // Create new user instance with hashed password
@@ -156,25 +158,23 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
   });
 
   //DashBoard for Startup-farmer
-  exports.Startup_farmer_tab =catchAsyncErrors(async (req,res)=>
-  {
-          //  Authenticate user BEFORE proceeding 
-          // so considering that if token authentication is false then further retrieval of farmer datails and other BELOW stuff WILLN'T happen
+  exports.Startup_farmer_tab =catchAsyncErrors(async (req,res)=>{
        console.log("line 152 varuku called");
             const { Email_ID } = req.body;
           try {
                 // Check if user exists in the database
                 const startup = await Startup.findOne({Email_ID});
-                if (!startup) {
-                  // User not found, send error response
-                  return res.status(404).json({ startupfound: false, error: 'No Startups Available. with the sent email' }); // no possible chances for this to happen
-                }
+                                      if (!startup) {
+                                        // User not found, send error response
+                                        return res.status(404).json({ startupfound: false, error: 'No Startups Available. with the sent email' }); // no possible chances for this to happen
+                                      }
                 const FarmersAvail = await Farmer.find({district:startup.district});
                 if(FarmersAvail.length===0){
                   console.log("No Farmers Available in this Startups district.");
-                  res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startups district.'}) // status should be 200 as no farmer is not an error
+                return res.status(200).json({farmerRetrievalSuccess:false, message: 'No Farmers Available in this Startups district.'}) // status should be 200 as no farmer is not an error
                 }
-
+                console.log("here i am :",FarmersAvail);
+                
                 res.status(200).json({farmerRetrievalSuccess:true, Farmerslist: FarmersAvail });// considering tokensuccess : true was already sent before
             } catch (error) {
                   console.error('Error during farmer data fetch at startup dashboard:', error);
@@ -184,9 +184,8 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
     });
 
       //DashBoard for Startup-doctor
-  exports.StartupD_Dashboard =catchAsyncErrors(async (req,res)=>{
+  exports.Startup_docter_tab =catchAsyncErrors(async (req,res)=>{
       const { Email_ID } = req.body;
-
       try {
       // Check if user exists in the database
       const startup = await Startup.findOne({Email_ID});
@@ -197,10 +196,10 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
       const DoctorsAvai = await Doctor.find({district:startup.district});
 
       if(DoctorsAvai.lenght===0){
-        res.status(404).json({DoctorRetrievalSuccess:false,error: 'No Farmers Available in this Startup\'s district.'})
+        res.status(404).json({DoctorRetrievalSuccess:false,error: 'No Doctors Available in this Startup\'s district.'})
       }
       
-        res.json({ success: true,DoctorRetrievalSuccess:true, message: 'Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
+        res.json({ success: true,DoctorRetrievalSuccess:true, message: 'The Doctors Details for Startup', DoctorsAvai: DoctorsAvai });
         } catch (error) {
         console.error('Error during doctor dashboard:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
