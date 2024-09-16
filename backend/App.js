@@ -23,24 +23,24 @@ app.use(cors());
 
 
 // MongoDB Atlas Connection
-const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
+// const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
 
-if (!mongoUri) {
-    console.error('MongoDB URI not defined in .env file.');
-    process.exit(1);
-}
+// if (!mongoUri) {
+//     console.error('MongoDB URI not defined in .env file.');
+//     process.exit(1);
+// }
 
-mongoose.connect(mongoUri)
-.then(() => {
+// mongoose.connect(mongoUri)
+// .then(() => {
 
-    console.log('Connected to MongoDB Atlas CLOUD !!');
+//     console.log('Connected to MongoDB Atlas CLOUD !!');
 
-})
-.catch((error) => {
-    console.error('Error connecting to MongoDB Atlas:', error);
-});
+// })
+// .catch((error) => {
+//     console.error('Error connecting to MongoDB Atlas:', error);
+// });
 
-// mongoose.connect('mongodb://localhost:27017/aayushdb');
+mongoose.connect('mongodb://localhost:27017/aayushdb');
 
 
 // importings of persons
