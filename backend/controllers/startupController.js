@@ -30,6 +30,16 @@ const upload = multer({ storage: storage });
 exports.createStartUp = catchAsyncErrors( async (req, res) => {
   const {Email_ID,password,companyName,address ,city,pinCode,
     state,district,phone_number}=req.body;
+    const Email_Validation=await Startup.findOne({Email_ID});
+    const PHno_Validation=await Startup.findOne({phone_number});
+    
+    if(Email_Validation){
+      return res.status(404).json({success :false,error:"Email already exists"});
+    }
+
+    if(PHno_Validation){
+      return res.status(404).json({success:false,error:"phone number already exists"});
+    }
     // Validate the request body using Joi
     const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
       state,district,phone_number});
@@ -131,7 +141,9 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
           IE_DOI,
           pdf1: pdf1FilePath,
           pdf2: pdf2FilePath,
-          feedback
+          feedback,
+          role:"Startup",
+          date:date.now()
         });
 
         // Save the StartupDashBoard to the database
