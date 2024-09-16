@@ -7,6 +7,12 @@ const path = require('path'); // to use __dirname
 require('dotenv').config(); // to access the values .env file
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:5173',  // Allows requests from this frontend url
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
  
 // Middleware
 app.use(express.json());
@@ -25,7 +31,9 @@ if (!mongoUri) {
 
 mongoose.connect(mongoUri)
 .then(() => {
-    console.log('Connected to MongoDB Atlas!');
+
+    console.log('Connected to MongoDB Atlas CLOUD !!');
+
 })
 .catch((error) => {
     console.error('Error connecting to MongoDB Atlas:', error);
@@ -45,6 +53,7 @@ mongoose.connect(mongoUri)
   const chat = require("./routes/chatRoute");
   const district = require("./routes/districtRoute")
   const sendEmail = require("./routes/sendEmailRoute")
+  const tokenVerify = require("./routes/tokenVerifyRoute");
 
 // assigning the persons
   app.use("/api",farmer);
@@ -57,6 +66,7 @@ mongoose.connect(mongoUri)
 app.use("/api",chat);
 app.use("/api",district);
 app.use("/api",sendEmail);
+app.use("/api",tokenVerify);
 
 // Serve the static files (HTML, CSS, JS)
 app.use(express.static('public'));

@@ -5,6 +5,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by defaul
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
 const {Druginspectorschema}=require("../middleware/schemaValidator");
 const multer = require("multer");  //object for pdf uploading
+
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
