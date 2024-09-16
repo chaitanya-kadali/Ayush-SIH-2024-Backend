@@ -58,7 +58,7 @@
             return Licensing Authority details.
 
     Licensing Authority Login
-    URL: /licensingAuthority-login
+    URL: /authority-login
     Usage: Endpoint forLicensing Authority login.
     Input: Licensing Authority Email_ID,password .
     Output: returns success(true/false) ,
