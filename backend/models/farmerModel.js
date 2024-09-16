@@ -7,8 +7,7 @@ const mongoose = require("mongoose");
       password:String,
       district:String,
       state:String,
-      crop_name:String,
-      language:String
+      crop_name:String
   });
 
 module.exports = mongoose.model("farmer",Farmer);
