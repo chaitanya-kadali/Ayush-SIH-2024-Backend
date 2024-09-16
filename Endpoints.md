@@ -135,14 +135,15 @@
             Corresponding details of Startup ,
 
 
-    Startup Dashboard
+    Fill Application In Startup Dashboard 
     URL: /startup-dashboard  rename to /startup-fillapplication 
-    Usage: Endpoint for accessing the startup dashboard.
-    Input: Startup Dash_details like (GST no,PAN no.... and two pdf's)  .
-    Output: returns Startup Dash_details details,success(true/false)
+    Usage: Endpoint for passig data to fillig up application.
+    Input: Startup Dash_details like GST no,PAN no.... and two pdf's  .
+    Output: returns 1. Startup-Dash_details-details,
+                     2.success(true/false)
 
     Startup Farmer Dashboard
-    URL: /farmertab-in-startup-and-token (renamed)
+    URL: /farmertab-in-startup (renamed)
     Usage: Endpoint for accessing the startup farmer dashboard.
     Input: Startup email id.
     Output: returns Tokensuccess(True/False),
@@ -150,8 +151,8 @@
             Available-Farmerdetails in that district
     
 
-    Startup Doctor Dashboard
-    URL: /startupd-dashboard
+    Startup Dashboard Doctortab
+    URL: /doctertab-in-startup
     Usage: Endpoint for accessing the startup doctor dashboard.
     Input: Startup district .
     Output: returns success(true/false),
@@ -196,3 +197,10 @@
     URL 1 : 
     Input :
     Output : 
+
+# To Verify and validate the token
+    the token sent from log in to dashboard will be sent as input.
+    URL : /tokenverify
+    place of calling : dashboard
+    input : token
+    output : tokenSuccesss
