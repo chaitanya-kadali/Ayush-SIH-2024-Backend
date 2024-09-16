@@ -18,13 +18,13 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
 const oauth2Client = new google.auth.OAuth2(
   '353752819798- uapdróratcgf80uatkf6adbbf7jdp0ss.apps.googleusercontent.com',
   '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',
-  'http://localhost:3000/oauth2callback'
+  'http://localhost:5002/api/doctor-reg'
 );
 
 // Set the refresh token (You can get this from Google OAuth flow)
-oauth2Client.setCredentials({
-  refresh_token: 'YOUR_REFRESH_TOKEN'
-});
+const { tokens } = await oauth2Client.getToken(code);
+oauth2Client.setCredentials(tokens);
+
 
 // Create a Google Drive instance
 const drive = google.drive({ version: 'v3', auth: oauth2Client });
@@ -99,7 +99,7 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
 
 
     // Validate the request body using Joi
-    const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language});
+   const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language});
 
   if (error) {
     // If validation fails, return the error message
@@ -110,6 +110,9 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+      // Get the file path and name of the uploaded PDF
+      const pdfFilePath = req.file.path;
+      const pdfFileName = req.file.originalname;
 
       // Upload the PDF to Google Drive and get the shareable link
       const pdfLink = await uploadPDFToDrive(pdfFilePath, pdfFileName);
@@ -124,8 +127,7 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
         phone_number,
         language,
         pdf: pdfLink,  // Save the PDF link
-        role: "Doctor",
-        date: Date.now()
+        role: "Doctor"
       });
 
       // Save the doctor to the database
