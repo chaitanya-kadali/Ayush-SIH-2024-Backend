@@ -5,6 +5,7 @@ const Farmer = require("../models/farmerModel");  //object of Farmer collection
 const Doctor = require("../models/doctormodel");  //object of Doctor collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const {Startupschema}=require("../middleware/schemaValidator");  //validate Doctor schema 
+const Status = require("../models/applicationStatus");
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading
@@ -50,15 +51,24 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     return res.status(400).json({ success: false, message:"schema not validated", message2: error.details[0].message });
   }
   try {
-    // check if user already exist ???????????????
+    
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     // Create new user instance with hashed password
+    const newStatus= new Status({
+      Email_ID:Email_ID,
+      FilledApplicationL:false,
+      FilledAplicationAccepted:false,
+      isDrugInspectorAssigned:false,
+      isDrugInspectorAccepted:false,
+      isLicensed:false
+    })
     const NewstartUp = new Startup({Email_ID,password:hashedPassword,companyName,address ,city,pinCode,
-      state,district,phone_number,role:"Startup",date:date.now()});
+      state,district,phone_number,role:"Startup"});
 
     // Save the user to the database
     await NewstartUp.save();
+    await newStatus.save();
 
     res.status(201).json({data:NewstartUp, success:true,message:"Startup successfully created"});
   } catch (error) {
