@@ -1,21 +1,21 @@
-const mongoose=require('mongoose');
+const mongoose = require("mongoose");
 
-const drupInspectorSchema=mongoose.Schema({
-    name:String,
-    Email_ID:String,
-    password:String,
-    mobile_no:Number,
-    designation:String,
-    Qualification:String,
-    OrderReferenceNo:Number,
-    OrderDate:String,
-    OrderPdfCopy:{
+//farmer model
+ const Druginspector = mongoose.Schema({
+      name:String,
+      Email_ID:String,
+      password:String,
+      district:String,
+      state:String,
+      phone_number:Number,
+      language:String,
+      pdf:{
         type:String,
         required:true
-    },
-    State:String,
-    district:String,
-    Notification:String
-});
+      }
 
-module.exports = mongoose.model("drupInspector",drupInspectorSchema);
+  // no need of language
+
+  });
+
+module.exports = mongoose.model("druginspector",Druginspector);
