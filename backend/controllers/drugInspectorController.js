@@ -43,7 +43,7 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
 
   if (error) {
     // If validation fails, return the error message
-    return res.status(400).json({ success: false, error: "password must contain only letters and numbers" });
+    return res.status(400).json({ success: false, error:error.details[0].message});
   }
     try {
       // Hash the password
@@ -68,8 +68,6 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
 
       // Save the doctor to the database
       await newDruginspector.save();
-
-      res.status(201).json(newDruginspector);
   
       res.status(201).json({data:newDruginspector, success: true}); // modified to match frontend
     } catch (error) {
@@ -126,8 +124,8 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
     if(!druginspector){
       return res.status(404).json({success:false,error:"druginspector not found"});
     }
-    const StartupsAvai=Startup.find({district:druginspector.district});
-    if (StartupsAvai===0) {
+    const StartupsAvai=await Startup.find({district:druginspector.district});
+    if (StartupsAvai.lenght===0) {
     
     return res.status(404).json({ StartupRetrievalsuccess: false, error: 'No Startups Available.' });
   

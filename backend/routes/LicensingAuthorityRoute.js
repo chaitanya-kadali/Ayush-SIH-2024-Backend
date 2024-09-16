@@ -2,24 +2,24 @@ const express = require("express");
 
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
-    createLiscensingAuthority,
-    LiscensingAuthorityLogin,
-    LiscensingAuthorityDashboard,
+    createLicensingAuthority,
+    LicensingAuthorityLogin,
+    LicensingAuthorityDashboard,
     LANotificationpost,
     LANotificationSendingStartups,
     LA_NotificationGet
-} = require("../controllers/liscensingAuthorityController");
+} = require("../controllers/licensingAuthorityController");
 
 const router = express.Router();
 
 //registration for liscensingAuthority
-router.route("/liscensingAuthority-reg").post(asyncMiddleware(createLiscensingAuthority));
+router.route("/licensingAuthority-reg").post(asyncMiddleware(createLicensingAuthority));
 
 //Login for liscensingAuthority
-router.route("/liscensingAuthority-login").post(asyncMiddleware(LiscensingAuthorityLogin));
+router.route("/licensingAuthority-login").post(asyncMiddleware(LicensingAuthorityLogin));
 
 //Dashboard for liscensingAuthority
-router.route("/liscensingAuthority-dashboard").post(asyncMiddleware(LiscensingAuthorityDashboard));
+router.route("/licensingAuthority-dashboard").post(asyncMiddleware(LicensingAuthorityDashboard));
 
 //Dashboard for LA-Notificationpost
 router.route("/LA-Notificationpost").post(asyncMiddleware(LANotificationpost));

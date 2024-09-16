@@ -1,10 +1,10 @@
 const bcrypt = require("bcryptjs");  //object for password hashing
-const Liscensingauthority = require("../models/liscensingAuthorityModel");// object of drugInspector collection
+const Licensingauthority = require("../models/licensingAuthorityModel");// object of drugInspector collection
 const Startup=require("../models/startupModel");  //object of Startup collection
 const LA_Notification=require("../models/LA_Notification");  //object of DI_Notification collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const {LiscensingAuthorityschema}=require("../middleware/schemaValidator"); 
+const {LicensingAuthorityschema}=require("../middleware/schemaValidator"); 
 require('dotenv').config();
 
 const multer = require("multer");//object for pdf uploading
@@ -44,7 +44,7 @@ const upload = multer({
 
 
 // Registration for LiscensingAuthority
-exports.createLiscensingAuthority = catchAsyncErrors(async (req, res) => {
+exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
   // Multer middleware for handling single file upload
   const uploadMiddleware = upload.single('OrderPdfCopy');
 
@@ -58,13 +58,13 @@ exports.createLiscensingAuthority = catchAsyncErrors(async (req, res) => {
     }
 
     // Extract form data
-    const { name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district } = req.body;
+    const { name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district } = req.body;
     // Validate the request body using Joi
-    const { error } = LiscensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, orderReferenceNo, OrderDate, State, district});
+    const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district});
 
     if (error) {
       // If validation fails, return the error message
-      return res.status(400).json({ success: false, error: "password must contain only letters and numbers" });
+      return res.status(400).json({ success: false, error: error.details[0].message });
     }
     try {
       // Hash the password for security
@@ -75,14 +75,14 @@ exports.createLiscensingAuthority = catchAsyncErrors(async (req, res) => {
       const pdfFilePath = req.file.path;
 
       // Create a new Drug Inspector with the uploaded PDF's file path
-      const newLiscensingAuthority = new Liscensingauthority({
+      const newLicensingAuthority = new Licensingauthority({
         name, 
         Email_ID, 
         password: hashedPassword,
         mobile_no,
         designation,
         Qualification,
-        orderReferenceNo,
+        OrderReferenceNo,
         OrderDate,
         OrderPdfCopy: pdfFilePath,
         State,
@@ -90,9 +90,9 @@ exports.createLiscensingAuthority = catchAsyncErrors(async (req, res) => {
       });
 
       // Save the Drug Inspector to the database
-      await newLiscensingAuthority.save();
+      await newLicensingAuthority.save();
 
-      res.status(201).json({ data: newLiscensingAuthority, success: true });
+      res.status(201).json({ data: newLicensingAuthority, success: true });
     } catch (error) {
       console.error('Error:', error);
       res.status(400).json({ error: error.message, success: false });
@@ -102,50 +102,65 @@ exports.createLiscensingAuthority = catchAsyncErrors(async (req, res) => {
 
 
 
-  //login for LiscensingAuthority
-  exports.LiscensingAuthorityLogin =catchAsyncErrors(async (req,res)=>{
-    const { Email_ID, password } = req.body;
-    try {
-    // Check if LiscensingAuthorityDetails exists in the database
-    const LiscensingAuthorityDetails = await Liscensingauthority.findOne({ Email_ID });
-    
-    if (!LiscensingAuthorityDetails) {
-    // LiscensingAuthorityDetails not found, send error response
-    
-    return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
-    
+exports.LicensingAuthorityLogin = catchAsyncErrors(async (req, res) => {
+  const { Email_ID, password } = req.body;
+
+  try {
+    // Check if LicensingAuthorityDetails exists in the database
+    const LicensingAuthorityDetails = await Licensingauthority.findOne({ Email_ID });
+
+    if (!LicensingAuthorityDetails) {
+      return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
+
+    // Check if password exists in the database
+    if (!LicensingAuthorityDetails.password) {
+      return res.status(500).json({ success: false, error: 'Password not set for this user.' });
+    }
+
     // Compare passwords
-    const passwordMatch = await bcrypt.compare(password, LiscensingAuthorityDetails.password);
+    const passwordMatch = await bcrypt.compare(password, LicensingAuthorityDetails.password);
+    
     if (!passwordMatch) {
-    // Passwords don't match, send error response
-    return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
+      return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
+
+    // Generate JWT token
     const token = jwt.sign(
-      { id: Liscensingauthority._id, Email_ID: Liscensingauthority.Email_ID },  // Payload data
-      process.env.JWT_SECRET,  // Secret key
-      { expiresIn: '1h' }  // Token expiry time (1 hour)
+      { id: LicensingAuthorityDetails._id, Email_ID: LicensingAuthorityDetails.Email_ID }, // Payload data
+      process.env.JWT_SECRET, // Secret key
+      { expiresIn: '1h' } // Token expiry time (1 hour)
     );
-    res.status(200).json({ success: true, message: 'Login successful',token: token, LiscensingAuthorityDetails: LiscensingAuthorityDetails });
-    } catch (error) {
+
+    // Send success response with token and details
+    res.status(200).json({ 
+      success: true, 
+      message: 'Login successful', 
+      token: token, 
+      LicensingAuthorityDetails: LicensingAuthorityDetails 
+    });
+
+  } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-     }
-  });
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+
 
     //Dashboard for LiscensingAuthority
-    exports.LiscensingAuthorityDashboard =catchAsyncErrors(async (req,res)=>{
+    exports.LicensingAuthorityDashboard =catchAsyncErrors(async (req,res)=>{
       authenticateJWT(req,res,async()=>{
         const { Email_ID } = req.body;
       try {
       // Check if StartupsAvailable exists in the database
-      const liscensingAuthority = await Liscensingauthority.findOne({Email_ID});
+      const licensingAuthority = await Licensingauthority.findOne({Email_ID});
       
-      if(!liscensingAuthority){
+      if(!licensingAuthority){
         return res.status(404).json({success:false,error:"liscensing Authority not found"});
       }
 
-      const StartupsAvai=await Startup.find({district:liscensingAuthority.district});
+      const StartupsAvai=await Startup.find({district:licensingAuthority.district});
 
       if (StartupsAvai===0) {
       // StartupsAvailable not found, send error response
@@ -153,7 +168,7 @@ exports.createLiscensingAuthority = catchAsyncErrors(async (req, res) => {
       return res.status(404).json({ StartupRetrievalsuccess: false, error: 'No Startups Available in that district.' });
       
       }
-      res.status(200).json({ success: true, Tokensuccess:true , StartupRetrievalsuccess:true,message: 'Startup Details for liscensingAuthority', StartupsAvai: StartupsAvai });
+      res.status(200).json({ success: true, Tokensuccess:true , StartupRetrievalsuccess:true,message: 'Startup Details for licensingAuthority', StartupsAvai: StartupsAvai });
       } catch (error) {
       console.error('Error during login:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
@@ -178,15 +193,15 @@ exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
     const { district } = startup;
 
     // Find thel iscensing Authority by matching the district
-    const liscensingAuthority = await Liscensingauthority.findOne({ district });
+    const licensingAuthority = await Licensingauthority.findOne({ district });
 
-    if (!liscensingAuthority) {
+    if (!licensingAuthority) {
       return res.status(404).json({ success: false, error: 'liscensing Authority not found for this district' });
     }
 
     // Create a new LA notification
     const newLANotification = new LA_Notification({
-      LA_Email: liscensingAuthority.Email_ID,  // Email of the liscensingAuthority
+      LA_Email: licensingAuthority.Email_ID,  // Email of the liscensingAuthority
       Startup_Email: Startup_Email,   // Email of the Startup
       Startup_Company: Startup_Company, // Startup Company Name
       notification: NotificationMsgData,  // Notification message data

@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 
-const drupInspectorSchema=mongoose.Schema({
+const LiscensingAuthoritySchema=mongoose.Schema({
     name:String,
     Email_ID:String,
     password:String,
@@ -18,4 +18,4 @@ const drupInspectorSchema=mongoose.Schema({
     Notification:String
 });
 
-module.exports = mongoose.model("drupInspector",drupInspectorSchema);
+module.exports = mongoose.model("LiscensingAuthority",LiscensingAuthoritySchema);

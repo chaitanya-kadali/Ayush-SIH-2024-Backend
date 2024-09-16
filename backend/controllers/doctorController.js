@@ -43,7 +43,7 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
 
   if (error) {
     // If validation fails, return the error message
-    return res.status(400).json({ success: false, error: "password must contain only letters and numbers" });
+    return res.status(400).json({ success: false, error: error.details[0].message});
   }
     try {
       // Hash the password

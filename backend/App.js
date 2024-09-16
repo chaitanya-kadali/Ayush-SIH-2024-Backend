@@ -38,7 +38,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
   const farmer = require("./routes/farmerRoute");
   const doctor = require("./routes/doctorRoute");
   const startup = require("./routes/startUpRoute");
-  const liscensingAuthority = require("./routes/LiscensingAuthorityRoute");
+  const licensingAuthority = require("./routes/LicensingAuthorityRoute");
   const drugInspector = require("./routes/drugInspectorRoute");
 
 // importing apis
@@ -50,7 +50,7 @@ mongoose.connect('mongodb://localhost:27017/aayushdb');
   app.use("/api",farmer);
   app.use("/api",doctor);
   app.use("/api",startup);
-  app.use("/api",liscensingAuthority);
+  app.use("/api",licensingAuthority);
   app.use("/api",drugInspector);
 
 // assigning the apis
