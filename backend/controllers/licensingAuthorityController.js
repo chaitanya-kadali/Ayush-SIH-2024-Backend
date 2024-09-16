@@ -46,16 +46,17 @@ const upload = multer({
 // Registration for LiscensingAuthority
 exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
   // Multer middleware for handling single file upload
-  const uploadMiddleware = upload.single('OrderPdfCopy');
+  // const uploadMiddleware = upload.single('OrderPdfCopy');
 
-  // Invoke the multer middleware manually
-  uploadMiddleware(req, res, async (err) => {
+  // // Invoke the multer middleware manually
+  // uploadMiddleware(req, res, async (err) => {
     if (err) {
-      return res.status(500).send(err.message); // Multer-related error
+      console.log("Multer-related error")
+      return res.status(500).json({error:err.message, success:false, message:"Multer-related error"}); // Multer-related error
     }
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.'); // No file uploaded error
-    }
+    // if (!req.file) {
+    //   return res.status(400).send('No file uploaded.'); // No file uploaded error
+    // }
 
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district } = req.body;
@@ -64,27 +65,28 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
     const PHno_Validation = await Licensingauthority.findOne({mobile_no});
 
     if(Email_Validation){
-      return res.status(404).json({success :false,error:"Email already exists"});
+      return res.status(404).json({success :false,error:"Email already exists", message:"Email already exists"});
     }
 
     if(PHno_Validation){
-      return res.status(404).json({success :false ,error:"Phone number already exists "});
+      return res.status(404).json({success :false ,error:"Phone number already exists ", message:"Phone number already exists "});
     }
 
     // Validate the request body using Joi
-    const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district});
+    // const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district});
 
-    if (error) {
-      // If validation fails, return the error message
-      return res.status(400).json({ success: false, error: error.details[0].message });
-    }
+    // if (error) {
+    //   // If validation fails, return the error message
+    //   console.log("schema validation fails");
+    //   return res.status(400).json({ success: false, error: error.details[0].message,message:"schema validation fails " });
+    // }
     try {
       // Hash the password for security
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Get the file path of the uploaded PDF
-      const pdfFilePath = req.file.path;
+      // const pdfFilePath = req.file.path;
 
       // Create a new Drug Inspector with the uploaded PDF's file path
       const newLicensingAuthority = new Licensingauthority({
@@ -96,22 +98,22 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
         Qualification,
         OrderReferenceNo,
         OrderDate,
-        OrderPdfCopy: pdfFilePath,
+        OrderPdfCopy: "pdfFilePath",
         State,
         district,
         role:"Licensing Authority",
-        date:date.now()
+        date:Date.now()
       });
 
-      // Save the Drug Inspector to the database
+      // Save the Licensing authority  to the database
       await newLicensingAuthority.save();
 
-      res.status(201).json({ data: newLicensingAuthority, success: true });
+      res.status(201).json({ data: newLicensingAuthority, success: true, message:"successfully Signed Up ! " });
     } catch (error) {
       console.error('Error:', error);
-      res.status(400).json({ error: error.message, success: false });
+      res.status(400).json({ error: error.message, success: false, message:"error at backend" });
     }
-  });
+  // });
 });
 
 
