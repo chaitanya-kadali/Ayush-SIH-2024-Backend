@@ -55,7 +55,7 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     // Create new user instance with hashed password
     const NewstartUp = new Startup({Email_ID,password:hashedPassword,companyName,address ,city,pinCode,
-      state,district,phone_number});
+      state,district,phone_number,role:"Startup",date:date.now()});
 
     // Save the user to the database
     await NewstartUp.save();

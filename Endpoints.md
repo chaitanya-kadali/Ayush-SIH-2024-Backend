@@ -4,70 +4,115 @@
     Doctor Registration
     URL: /doctor-reg
     Usage: Endpoint for doctor registration.
-    Input: Doctor registration details(name,Email_ID,password....).
+    Input: Doctor registration details(name,Email_ID,password(minimum 8 letter with special characters)....).
     Output: returns Doctor details,success(true).
 
     Doctor Login
     URL: /doctor-login
     Usage: Endpoint for doctor login.
     Input: Doctor Email_ID,password .
-    Output: returns Corresponding details of Doctor,success(true/false).
+    Output: returns success(true/false),
+            token,
+            Corresponding details of Doctor.
 
     Doctor Dashboard
     URL: /doctor-dashboard
     Usage: Endpoint for accessing the doctor dashboard.
-    Input: Startup district .
-    Output: returns Available startupdetails in that district,success(true/false)
-
+    Input: Doctor Email,
+           Token generated after login.
+    Output: returns success(true/false),
+            token success(True/false),
+            StartupRetrievalsuccess(true/false),
+            Available startupdetails in that district
 # Drug Inspector
-    Drug Inspector Login
+    DrugInspector Registration
+    URL: /drugInspector-reg
+    Usage: Endpoint for DrugInspector registration.
+    Input:Startup details(name,Email_ID,password(minimum 8 letter with special characters),....)
+    Output:DrugInspector data,Success(True/False)
+
+    DrugInspector Login
     URL: /drugInspector-login
-    Usage: Endpoint for drug inspector login.
+    Usage: Endpoint for DrugInspector login.
     Input: DrugInspector Email_ID,password .
-    Output: returns Corresponding details of DrugInspector , success(true/false) .
+    Output: returns success(true/false) ,
+            token,
+            Corresponding details of DrugInspector ,
 
-    Drug Inspector Dashboard
+    DrugInspector Dashboard
     URL: /drugInspector-dashboard
-    Usage: Endpoint for accessing the drug inspector dashboard.
-   Input: Startup district .
-    Output: returns Available startupdetails in that district,success(true/false)
+    Usage: Endpoint for accessing the startup drugInspector dashboard.
+    Input: drugInspector Email_ID ,
+           token generated after login.
+    Output: returns success(true/false),
+            Tokensuccess(True/False),
+            StartupRetrievalsuccess(True/False),
+            Available Doctordetails in that district
+    
+# Licensing Authority
+    Licensing Authority Registration
+    URL: /licensingAuthority-reg
+    usage: End point for Licensing Authority registration
+    Input: Licensing Authority details(name,Email_ID,password(minimum 8 letter with special characters).....)
+    Output: Success(true/false),
+            return Licensing Authority details.
 
-    Drug Inspector Notification Post
-    URL: /DI-Notificationpost
-    Usage: Endpoint for drug inspectors to post notifications.
+    Licensing Authority Login
+    URL: /licensingAuthority-login
+    Usage: Endpoint forLicensing Authority login.
+    Input: Licensing Authority Email_ID,password .
+    Output: returns success(true/false) ,
+            token,
+            Corresponding details of Licensing Authority ,
+
+    Licensing Authority Dashboard
+    URL: /licensingAuthority-dashboard
+    Usage: Endpoint for accessing the licensing Authority dashboard.
+    Input: Licensing Authority Email,
+          token generated after login
+    Output: returns success(true/false),
+            Token success(true/false),
+            StartupRetrievalsuccess(true/false),
+            Available startupdetails in that district
+
+    Licensing Authority Notification Post
+    URL: /LA-Notificationpost
+    Usage: Endpoint for Licensing Authorities to post notifications.
     Input:  Startup_Email, NotificationMsgData, Startup_Company.
-    Output: returns,success message, Notification data(StartupEmail,DI_Email,message) ,Success(true/false)
+    Output: returns,success message, Notification data(StartupEmail,LA_Email,message) ,Success(true/false)
 
 
-    Drug Inspector Notification Sending Startups
-    URL: /DI-NotificationSendingStartups
-    Usage: Endpoint for drug inspectors to send notifications to startups.
-    Input:Drug Inspector Email
+    Licensing Authority Notification Sending Startups
+    URL: /LA-NotificationSendingStartups
+    Usage: Endpoint for Licensing Authorities to send notifications to startups.
+    Input:Licensing Authority Email
     Output:returns list of StartUp(email,company names),Success(true,false)
 
-    Drug Inspector Notification Get
-    URL: /DI-NotificationGet
-    Usage: Endpoint for drug inspectors to fetch notifications.
-    Input:DI_Email,Startup_Email
+    Licensing Authority Notification Get
+    URL: /LA-NotificationGet
+    Usage: Endpoint for Licensing Authorities to fetch notifications.
+    Input:LA_Email,Startup_Email
     Output: notification message for that startup,Success(True/False)
 
 # Farmer
     Farmer Registration
     URL: /farmer-reg
     Usage: Endpoint for farmer registration.
-    Input:Farmer details
-    Output:farmer data,Success(True/False)
+    Input:Farmer details(name,phone_number,password(minimum 8 letter with special characters).....)
+    Output:farmer data,Success(True/False).
 
     Farmer Login
     URL: /farmer-login
     Usage: Endpoint for farmer login.
     Input: Farmer Phone_number,password .
-    Output: returns Corresponding details of Farmer ,success(true/false)
+    Output: returns success(true/false),
+            token,
+            Corresponding details of Farmer ,
 
     Farmer Dashboard
     URL: /farmer-dashboard  rename to /startups-at-farmersdistrict
     Usage: Endpoint for accessing the farmer dashboard.
-    Input: Farmer email id .
+    Input: Farmer Phone Number.
     Output: returns success(true/false),
             Tokensuccess(True/False),
             StartupRetrievalsuccess(True/False),
@@ -78,18 +123,21 @@
     Startup Registration
     URL: /startup-reg
     Usage: Endpoint for startup registration.
-    Input:Startup details
+    Input:Startup details(name,Email_ID,password(minimum 8 letter with special characters),company_name,....)
     Output:Startup data,Success(True/False)
 
     Startup Login
     URL: /startup-login
     Usage: Endpoint for startup login.
     Input: Startup Email_ID,password .
-    Output: returns Corresponding details of Startup ,success(true/false),
+    Output: returns success(true/false) ,
+            token,
+            Corresponding details of Startup ,
 
 
     Fill Application In Startup Dashboard 
     URL: /startup-dashboard  rename to /startup-fillapplication 
+
     Usage: Endpoint for passig data to fillig up application.
     Input: Startup Dash_details like GST no,PAN no.... and two pdf's  .
     Output: returns 1. Startup-Dash_details-details,
