@@ -11,9 +11,15 @@ const {
 } = require("../controllers/licensingAuthorityController");
 
 const router = express.Router();
+const multer = require("multer");//object for pdf uploading
 
+// const jwt = require('jsonwebtoken');  //object to Generate JWT token
+
+// Multer setup
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 //registration for liscensingAuthority
-router.route("/licensingAuthority-reg").post(asyncMiddleware(createLicensingAuthority));
+router.route("/licensingAuthority-reg").post(upload.single('OrderPdfCopy'),createLicensingAuthority);
 
 //Login for liscensingAuthority
 router.route("/authority-login").post(asyncMiddleware(LicensingAuthorityLogin));
