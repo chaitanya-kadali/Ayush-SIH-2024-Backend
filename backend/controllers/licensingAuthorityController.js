@@ -20,79 +20,89 @@ const upload = multer({ storage: storage });
 // Registration for LiscensingAuthority
 exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
   console.log("AAAAABBBB 22 ->");
-   
+
+  try {
+    // Check if a file was uploaded
     if (!req.file) {
       console.log("AAAAABBBB 25->");
-      return res.status(400).send('No file uploaded.'); // No file uploaded error
+      return res.status(400).json({ success: false, message: 'No file uploaded.' }); // No file uploaded error
     }
 
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district } = req.body;
 
+    // Check for existing Email and Phone Number
     const Email_Validation = await Licensingauthority.findOne({ Email_ID });
     const PHno_Validation = await Licensingauthority.findOne({ mobile_no });
 
     if (Email_Validation) {
-      return res.status(404).json({ success: false, error: "Email already exists", message: "Email already exists" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
     if (PHno_Validation) {
-      return res.status(404).json({ success: false, error: "Phone number already exists", message: "Phone number already exists" });
+      return res.status(400).json({ success: false, message: "Phone number already exists" });
     }
+
     console.log("AAAAABBBB 42 ->");
-    // Validate the request body using Joi
+
+    // Validate the request body using Joi (assuming this part is working, uncomment if necessary)
     // const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
 
     // if (error) {
     //   console.log("AAAAABBBB 47 ->");
-    //   return res.status(400).json({ success: false, error: error.details[0].message, message: "schema validation fails" });
+    //   return res.status(400).json({ success: false, message: "Schema validation failed", error: error.details[0].message });
     // }
 
-    try {
-      // Hash the password for security
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Hash the password for security
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log("1st phase");
+    // Upload PDF to GridFS
+    const db = mongoose.connection.db;
+    const bucket = new GridFSBucket(db);
+    const pdfBuffer = req.file.buffer;
+    const uploadStream = bucket.openUploadStream(req.file.originalname);
 
-      // Upload PDF to GridFS
-      const db = mongoose.connection.db;
-      const bucket = new GridFSBucket(db);
-      const pdfBuffer = req.file.buffer;
-      const uploadStream = bucket.openUploadStream(req.file.originalname);
-
-      uploadStream.end(pdfBuffer);
-
-      uploadStream.on('finish', async () => {
-        // After the PDF is uploaded, save the Licensing Authority record
-        const newLicensingAuthority = new Licensingauthority({
-          name,
-          Email_ID,
-          password: hashedPassword,
-          mobile_no,
-          designation,
-          Qualification,
-          OrderReferenceNo,
-          OrderDate,
-          OrderPdfCopy: uploadStream.id, // Save the GridFS file ID
-          State,
-          district,
-          role: "Licensing Authority",
-          date: Date.now()
-        });
-
-        await newLicensingAuthority.save();
-        res.status(201).json({ data: newLicensingAuthority, success: true, message: "Successfully signed up!" });
+    // Handle events for uploadStream
+    uploadStream.on('finish', async () => {
+      console.log("2st phase");
+      // After the PDF is uploaded, save the Licensing Authority record
+      const newLicensingAuthority = new Licensingauthority({
+        name,
+        Email_ID,
+        password: hashedPassword,
+        mobile_no,
+        designation,
+        Qualification,
+        OrderReferenceNo,
+        OrderDate,
+        OrderPdfCopy: uploadStream.id, // Save the GridFS file ID
+        State,
+        district,
+        role: "Licensing Authority",
+        date: Date.now()
       });
 
-      uploadStream.on('error', (err) => {
-        res.status(500).send('Error uploading PDF: ' + err.message);
-      });
+      // Save the new Licensing Authority to the database
+      await newLicensingAuthority.save();
+      res.status(201).json({ data: newLicensingAuthority, success: true, message: "Successfully signed up!" });
+    });
 
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(400).json({ error: error.message, success: false, message: "Error at backend" });
-    }
-  
+    uploadStream.on('error', (err) => {
+      console.error('Error uploading PDF:', err);
+      res.status(500).json({ success: false, message: 'Error uploading PDF', error: err.message });
+    });
+
+    // End the upload stream with the PDF buffer
+    uploadStream.end(pdfBuffer);
+
+  } catch (error) {
+    // Catch any errors that occur during the operation
+    console.error('Error creating Licensing Authority:', error);
+    res.status(500).json({ success: false, message: 'Error at backend', error: error.message });
+  }
 });
+
 
 
 
@@ -187,7 +197,7 @@ exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
     if (!licensingAuthority) {
       return res.status(404).json({ success: false, error: 'liscensing Authority not found for this district' });
     }
-
+    
     // Create a new LA notification
     const newLANotification = new LA_Notification({
       LA_Email: licensingAuthority.Email_ID,  // Email of the liscensingAuthority

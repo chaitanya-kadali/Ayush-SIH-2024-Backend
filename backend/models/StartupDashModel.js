@@ -10,7 +10,10 @@ const StartupDashSchema=mongoose.Schema({
     IssuuingAuthority:String,
     IE_code:Number,
     IE_DOI:String,
-    feedback:String
+    feedback:{
+        type: [String],  // Ensure that this is an array of strings
+        default: [],
+      }
 });
 
 module.exports=mongoose.model("StartupdashModel",StartupDashSchema);

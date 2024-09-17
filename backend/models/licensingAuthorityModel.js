@@ -15,7 +15,10 @@ const LiscensingAuthoritySchema=mongoose.Schema({
     },
     State:String,
     district:String,
-    Notification:String
+    Notification:{
+        type: [String],  // Ensure that this is an array of strings
+        default: [],
+      }
 });
 
 module.exports = mongoose.model("LiscensingAuthority",LiscensingAuthoritySchema);
