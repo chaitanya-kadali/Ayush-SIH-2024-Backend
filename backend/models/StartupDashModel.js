@@ -10,14 +10,6 @@ const StartupDashSchema=mongoose.Schema({
     IssuuingAuthority:String,
     IE_code:Number,
     IE_DOI:String,
-    pdf1:{
-        type:String,
-        required:true
-    },
-    pdf2:{
-        type:String,
-        required:true
-    },
     feedback:String
 });
 
