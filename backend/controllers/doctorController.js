@@ -1,50 +1,27 @@
+const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
+const express=require("express");
+const app=express();
 const { GridFSBucket } = require('mongodb');
 const mongoose = require('mongoose');
-const path = require('path');
-const fs = require('fs');
-const pdf = require('pdf-poppler');
-const tesseract = require('tesseract.js');
-const Pdf = require('./models/pdfModel'); // Import the Pdf model
-const upload = require('./uploadMiddleware'); // Ensure this path is correct
 
-// Function to convert PDF to Images
-const convertPdfToImages = async (pdfPath, outputDir) => {
-  let opts = {
-    format: 'png',
-    out_dir: outputDir,
-    out_prefix: 'page'
-  };
+const bcrypt = require('bcryptjs'); // object for password hashing
+const Doctor = require("../models/doctormodel"); // object of doctor collection
+const Startup = require("../models/startupModel");// object of startup collection
+const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
+const authenticateJWT = require("../middleware/authMiddleware");  //validate the Token after login
+const { Doctorschema } = require("../middleware/schemaValidator");
+const multer = require("multer");  //object for pdf uploading
+require('dotenv').config();
 
-  try {
-    await pdf.convert(pdfPath, opts);
-    console.log('PDF converted to images.');
-  } catch (error) {
-    console.error('Error converting PDF:', error);
-    throw error;
-  }
-};
+const jwt = require('jsonwebtoken');  //object to Generate JWT token 
 
-// Function to check image text clarity using Tesseract.js
-const checkImageTextClarity = async (imagePath) => {
-  try {
-    const { data: { text, confidence } } = await tesseract.recognize(imagePath, 'eng', {
-      logger: (m) => console.log(m)
-    });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-    console.log(`Extracted Text: ${text}`);
-    console.log(`OCR Confidence: ${confidence}`);
-
-    // Adjusted threshold for clarity check
-    const isTextClear = confidence > 70; // Adjusted threshold
-    return isTextClear;
-  } catch (error) {
-    console.error('Error processing image with Tesseract:', error);
-    throw error;
-  }
-};
-
-// Endpoint for PDF quality check
-exports.PdfQualityCheck = catchAsyncErrors(async (req, res) => {
+// Registration for doctor
+exports.createDoctor = catchAsyncErrors(async (req, res) => {
   const uploadMiddleware = upload.single('pdf');
 
   // Invoke the multer middleware manually
@@ -53,75 +30,129 @@ exports.PdfQualityCheck = catchAsyncErrors(async (req, res) => {
       return res.status(500).send(err.message);
     }
     if (!req.file) {
-      return res.status(400).json({ success: false, error: 'No file uploaded' });
+      return res.status(400).send('No file uploaded.');
     }
 
-    const pdfPath = req.file.path;
-    const outputDir = path.join(__dirname, 'images');
+    const { name, Email_ID, password, district, state, phone_number, language } = req.body;
+
+    const Email_Validation = await Doctor.findOne({ Email_ID });
+    const PHno_Validation = await Doctor.findOne({ phone_number });
+
+    if (Email_Validation) {
+      return res.status(404).json({ success: false, error: "Email_ID already exists" });
+    }
+
+    if (PHno_Validation) {
+      return res.status(404).json({ success: false, error: "Phone number already exists " });
+    }
+
+    // Validate the request body using Joi
+    const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
+
+    if (error) {
+      // If validation fails, return the error message
+      return res.status(400).json({ success: false, error: error.details[0].message });
+    }
 
     try {
-      // Ensure output directory exists
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-      }
+      // Hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Convert PDF pages to images
-      console.log('Converting PDF to images...');
-      await convertPdfToImages(pdfPath, outputDir);
+      const db = mongoose.connection.db;
+      const bucket = new GridFSBucket(db);
+      const pdfBuffer = req.file.buffer;
+      const uploadStream = bucket.openUploadStream(req.file.originalname);
 
-      // Check clarity of each image (page of PDF)
-      const files = fs.readdirSync(outputDir);
-      let allPagesClear = true;
+      uploadStream.end(pdfBuffer);
 
-      for (const file of files) {
-        if (path.extname(file) === '.png') {
-          const imagePath = path.join(outputDir, file);
-          console.log(`Processing image: ${imagePath}`);
+      uploadStream.on('finish', async () => {
+        // After the PDF is uploaded, save the doctor record
+        const newDoctor = new Doctor({
+          name,
+          Email_ID,
+          password: hashedPassword,
+          district,
+          state,
+          phone_number,
+          language,
+          pdf: uploadStream.id, // Save the GridFS file ID
+          role: "Doctor"
+        });
 
-          // Check text clarity using OCR
-          const isTextClear = await checkImageTextClarity(imagePath);
-          if (!isTextClear) {
-            console.log(`Text is unclear on page: ${file}`);
-            allPagesClear = false;
-            break;
-          } else {
-            console.log(`Text is clear on page: ${file}`);
-          }
-        }
-      }
+        await newDoctor.save();
+        res.status(201).json(newDoctor);
+      });
 
-      if (allPagesClear) {
-        res.status(200).json({ success: true, message: 'PDF is clear, proceed to upload.' });
-      } else {
-        // Throw an error if any page is unclear
-        fs.unlinkSync(pdfPath); // Remove uploaded PDF
-        res.status(400).json({ success: false, message: 'PDF is unclear, can\'t upload.' });
-      }
+      uploadStream.on('error', (err) => {
+        res.status(500).send('Error uploading PDF: ' + err.message);
+      });
+
     } catch (error) {
-      console.error('Error processing PDF:', error);
-      res.status(500).json({ success: false, message: 'Error processing PDF.', error: error.message });
-    } finally {
-      // Clean up generated images after processing
-      cleanUpImages(outputDir);
+      console.error('Error:', error);
+      res.status(400).json({ error: error.message, success: false });
     }
   });
 });
 
-// Function to clean up generated images
-const cleanUpImages = (imageDir) => {
-  fs.readdir(imageDir, (err, files) => {
-    if (err) {
-      console.error('Error reading image directory:', err);
-      return;
-    }
 
-    files.forEach((file) => {
-      const filePath = path.join(imageDir, file);
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error(`Error deleting file ${filePath}:`, err);
-        }
-      });
-    });
+
+  //Login for doctor
+  exports.DoctorLogin =catchAsyncErrors(async (req,res)=>{
+    const { Email_ID, password } = req.body;
+    try {
+    // Check if Doctor exists in the database
+    const DoctorDetails = await Doctor.findOne({ Email_ID });
+
+    if (!DoctorDetails) {
+    // Doctor Details not found, send error response
+
+    return res.status(404).json({ success: false, error: 'Invalid Email_ID or password.' });
+
+    }
+    // Compare passwords
+    const passwordMatch = await bcrypt.compare(password, DoctorDetails.password);
+    if (!passwordMatch) {
+
+    // Passwords don't match, send error response
+    return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
+    }
+    const token = jwt.sign(
+      { id: DoctorDetails._id, Email_ID: DoctorDetails.Email_ID },  // Payload data
+      process.env.JWT_SECRET,  // Secret key
+      { expiresIn: '1h' }  // Token expiry time (1 hour)
+    );
+
+    res.json({ success: true, message: 'Login successful' ,token: token, DoctorDetails: DoctorDetails });
+    }
+    catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+     }
   });
-};
+
+
+  //Doctor Dashboard
+  exports.DoctorDashboard =catchAsyncErrors(async (req,res)=>{
+    authenticateJWT(req,res,async()=>{
+    const { Email_ID } = req.body;
+    try {
+    // Check if startups exists in the database
+    const doctor = await Doctor.findOne({Email_ID});
+
+    if(!doctor){
+      return res.status(404).json({success:false,error:"Doctor not found"});
+    }
+    const StartupsAvai=await Startup.find({district: doctor.district});
+    if (StartupsAvai.lenght===0) {
+    
+    return res.status(404).json({ StartupRetrievalsuccess: false, error: 'No Startups Available.' });
+  
+    }
+    res.json({ success: true, Tokensuccess:true, StartupRetrievalsuccess: true, message: 'Startup Details for doctor', StartupsAvai: StartupsAvai});
+    } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+     }
+    })
+  });
