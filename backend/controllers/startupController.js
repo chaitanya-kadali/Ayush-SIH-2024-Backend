@@ -18,6 +18,8 @@ const upload = multer({ storage: storage });
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
 
+
+
 //Registration for the start up
 exports.createStartUp= catchAsyncErrors( async (req, res) => {
 
