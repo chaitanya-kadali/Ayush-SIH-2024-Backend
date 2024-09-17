@@ -1,8 +1,6 @@
-const { google } = require('googleapis');
-const fs = require('fs');
-const path = require('path');
+
 const express=require("express");
-const app=express();
+
 const { GridFSBucket } = require('mongodb');
 const mongoose = require('mongoose');
 
@@ -47,12 +45,12 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
     }
 
     // Validate the request body using Joi
-    const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
+    // const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
 
-    if (error) {
-      // If validation fails, return the error message
-      return res.status(400).json({ success: false, error: error.details[0].message });
-    }
+    // if (error) {
+    //   // If validation fails, return the error message
+    //   return res.status(400).json({ success: false, error: error.details[0].message });
+    // }
 
     try {
       // Hash the password
@@ -156,4 +154,3 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
      }
     })
   });
-

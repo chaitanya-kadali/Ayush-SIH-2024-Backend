@@ -17,9 +17,61 @@ const upload = multer({ storage: storage });
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
- 
+
+
 
 //Registration for the start up
+exports.createStartUp= catchAsyncErrors( async (req, res) => {
+
+  const {Email_ID,password,companyName,address ,city,pinCode,
+    state,district,phone_number}=req.body;
+    const Email_Validation=await Startup.findOne({Email_ID});
+    const PHno_Validation=await Startup.findOne({phone_number});
+    
+    if(Email_Validation){
+      return res.status(404).json({success :false,message:"Email already exists",error:"Email already exists"});
+    }
+
+    if(PHno_Validation){
+      return res.status(404).json({success:false,message:"phone number already exists",error:"phone number already exists"});
+    }
+
+    // Validate the request body using Joi
+  //   const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
+  //     state,district,phone_number});
+  // if (error) {
+  //   // If validation fails, return the error message
+  //   console.log("schema not validated");
+  //   return res.status(400).json({ success: false, message:"schema or password not validated", message2: error.details[0].message });
+  // }
+  try {
+    
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Create new user instance with hashed password
+    const newStatus= new Status({
+      Email_ID:Email_ID,
+      FilledApplicationL:false,
+      FilledAplicationAccepted:false,
+      isDrugInspectorAssigned:false,
+      isDrugInspectorAccepted:false,
+      isLicensed:false
+    })
+    const NewstartUp = new Startup({Email_ID,password:hashedPassword,companyName,address ,city,pinCode,
+      state,district,phone_number,role:"Startup"});
+
+    // Save the user to the database
+    await NewstartUp.save();
+    await newStatus.save();
+
+    res.status(201).json({data:NewstartUp, success:true,message:"Startup successfully created"});
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(400).json({ error: error.message , success:false});
+  }
+});
+
+//Dashboard for the start up
 exports.Startup_Dashboard = catchAsyncErrors(async (req, res) => {
   const uploadMiddleware = upload.fields([
     { name: 'pdf1', maxCount: 1 },
