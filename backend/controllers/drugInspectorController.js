@@ -18,15 +18,15 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
 // Registration for doctor
 exports.createDruginspector = catchAsyncErrors(async (req, res) => {
-  const uploadMiddleware = upload.single('pdf');
+  // const uploadMiddleware = upload.single('pdf');
 
-  uploadMiddleware(req, res, async (err) => {
-    if (err) {
-      return res.status(500).send(err.message);
-    }
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-    }
+  // uploadMiddleware(req, res, async (err) => {
+  //   if (err) {
+  //     return res.status(500).send(err.message);
+  //   }
+  //   if (!req.file) {
+  //     return res.status(400).send('No file uploaded.');
+  //   }
 
     const { name, Email_ID, password, district, state, phone_number } = req.body;
 
@@ -38,6 +38,7 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
     }
 
     if (PHno_Validation) {
+      console.log("phone")
       return res.status(404).json({ success: false, error: "Phone number already exists" });
     }
 
@@ -54,14 +55,14 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Upload PDF to GridFS
-      const db = mongoose.connection.db;
-      const bucket = new GridFSBucket(db);
-      const pdfBuffer = req.file.buffer;
-      const uploadStream = bucket.openUploadStream(req.file.originalname);
+      // const db = mongoose.connection.db;
+      // const bucket = new GridFSBucket(db);
+      // const pdfBuffer = req.file.buffer;
+      // const uploadStream = bucket.openUploadStream(req.file.originalname);
 
-      uploadStream.end(pdfBuffer);
+      // uploadStream.end(pdfBuffer);
 
-      uploadStream.on('finish', async () => {
+      // uploadStream.on('finish', async () => {
         // Create a new Druginspector with the uploaded PDF's file ID
         const newDruginspector = new Druginspector({
           name,
@@ -70,8 +71,8 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
           district,
           state,
           phone_number,
-          language,
-          pdf: uploadStream.id, // Save the GridFS file ID
+          // language,
+          // pdf: uploadStream.id, // Save the GridFS file ID
           role: "Drug Inspector",
           date: Date.now()
         });
@@ -80,18 +81,18 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
         await newDruginspector.save();
 
         res.status(201).json({ data: newDruginspector, success: true });
-      });
+      // });
 
-      uploadStream.on('error', (err) => {
-        res.status(500).send('Error uploading PDF: ' + err.message);
-      });
+      // uploadStream.on('error', (err) => {
+      //   res.status(500).send('Error uploading PDF: ' + err.message);
+      // });
 
     } catch (error) {
       console.error('Error:', error);
       res.status(400).json({ error: error.message, success: false });
     }
   });
-});
+// });
 
 
   //Login for doctor
