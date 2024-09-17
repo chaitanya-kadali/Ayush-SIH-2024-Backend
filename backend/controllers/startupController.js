@@ -19,7 +19,7 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
 
 //Registration for the start up
-exports.createStartUp = catchAsyncErrors( async (req, res) => {
+exports.createStartUp= catchAsyncErrors( async (req, res) => {
 
   const {Email_ID,password,companyName,address ,city,pinCode,
     state,district,phone_number}=req.body;
@@ -35,13 +35,13 @@ exports.createStartUp = catchAsyncErrors( async (req, res) => {
     }
 
     // Validate the request body using Joi
-    const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
-      state,district,phone_number});
-  if (error) {
-    // If validation fails, return the error message
-    console.log("schema not validated");
-    return res.status(400).json({ success: false, message:"schema or password not validated", message2: error.details[0].message });
-  }
+  //   const { error } = Startupschema.validate({ Email_ID,password,companyName,address ,city,pinCode,
+  //     state,district,phone_number});
+  // if (error) {
+  //   // If validation fails, return the error message
+  //   console.log("schema not validated");
+  //   return res.status(400).json({ success: false, message:"schema or password not validated", message2: error.details[0].message });
+  // }
   try {
     
     const saltRounds = 10;
