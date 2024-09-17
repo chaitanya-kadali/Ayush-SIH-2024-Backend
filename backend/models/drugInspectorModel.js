@@ -11,7 +11,7 @@ const mongoose = require("mongoose");
       language:String,
       pdf:{
         type:String,
-        required:true
+        // required:true
       }
 
   // no need of language
