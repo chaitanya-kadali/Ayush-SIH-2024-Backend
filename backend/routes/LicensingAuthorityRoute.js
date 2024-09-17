@@ -7,7 +7,8 @@ const {
     LicensingAuthorityDashboard,
     LANotificationpost,
     LANotificationSendingStartups,
-    LA_NotificationGet
+    LA_NotificationGet,
+    LA_NotificationValid
 } = require("../controllers/licensingAuthorityController");
 
 const router = express.Router();

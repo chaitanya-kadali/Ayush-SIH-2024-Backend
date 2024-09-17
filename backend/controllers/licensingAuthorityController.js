@@ -8,6 +8,7 @@ const {LicensingAuthorityschema}=require("../middleware/schemaValidator");
 const { GridFSBucket } = require('mongodb');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const axios = require("axios")
 
 const multer = require("multer");//object for pdf uploading
 
@@ -168,31 +169,34 @@ exports.LicensingAuthorityLogin = catchAsyncErrors(async (req, res) => {
     //uploading notification from StartUp into Database
     // LA Notification Post
 exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
-  const { Startup_Email, NotificationMsgData, Startup_Company } = req.body;
-
+  const { Startup_Email, NotificationMsgData } = req.body;
   try {
     // Find the startup by Startup_Email to get the district
     const startup = await Startup.findOne({ Email_ID: Startup_Email });
-
     if (!startup) {
       return res.status(404).json({ success: false, error: 'Startup not found' });
     }
-
     // Get the district from the startup
     const { district } = startup;
-
     // Find thel iscensing Authority by matching the district
-    const licensingAuthority = await Licensingauthority.findOne({ district });
-
+    const licensingAuthority = await Licensingauthority.findOne();
     if (!licensingAuthority) {
       return res.status(404).json({ success: false, error: 'liscensing Authority not found for this district' });
     }
+    const email = licensingAuthority.Email_ID;
 
+    console.log("LA email",email);
+    const message = NotificationMsgData;
+    const response =await axios.post("http://localhost:5002/api/send-email",{ email, message });
+    if(!response.data.success){
+      console.log("eror : email is not sent");
+    }
+  
     // Create a new LA notification
     const newLANotification = new LA_Notification({
       LA_Email: licensingAuthority.Email_ID,  // Email of the liscensingAuthority
       Startup_Email: Startup_Email,   // Email of the Startup
-      Startup_Company: Startup_Company, // Startup Company Name
+      Startup_Company: startup.companyName, // Startup Company Name
       notification: NotificationMsgData,  // Notification message data
       date: new Date()  // Date of notification
     });
@@ -201,7 +205,8 @@ exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
     await newLANotification.save();
 
     // Return success response
-    res.status(201).json({ success: true, message: 'Notification posted successfully', data: newLANotification });
+    console.log("herrrrrrr");
+    return res.status(201).json({ success: true, message: 'Notification posted successfully', data: newLANotification });
 
   } catch (error) {
     console.error('Error during notification post:', error);
