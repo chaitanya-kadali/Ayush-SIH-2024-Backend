@@ -31,7 +31,7 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
       return res.status(400).send('No file uploaded.');
     }
 
-    const { name, Email_ID, password, district, state, phone_number, language } = req.body;
+    const { name, Email_ID, password, district, state, phone_number } = req.body;
 
     const Email_Validation = await Doctor.findOne({ Email_ID });
     const PHno_Validation = await Doctor.findOne({ phone_number });
@@ -73,7 +73,6 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
           district,
           state,
           phone_number,
-          language,
           pdf: uploadStream.id, // Save the GridFS file ID
           role: "Doctor"
         });
