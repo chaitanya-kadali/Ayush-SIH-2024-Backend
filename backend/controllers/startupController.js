@@ -201,7 +201,7 @@ exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
     StartUp.feedback.push(feedback);
 
     // Save the updated startup to the database
-    await StartUp.save();
+    await StartUp.save(); 
 
     // Return a success response
     res.status(200).json({ success: true, message: 'Feedback updated successfully', data: StartUp });
