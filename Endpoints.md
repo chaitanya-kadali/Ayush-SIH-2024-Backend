@@ -173,6 +173,13 @@
     Input: Startup Email_ID .
     Output: returns Corresponding Startup Feedback,success(true/false).
 
+    StratupBasic
+    URL: /startup-basic
+    Usage: Endpoint to retrieval of Startup Data
+    Input: Startup Email
+    Output: Success(true/false),
+        Corresponding Startup Data.
+
 # Email sending
     URL: /send-email
     Usage: Endpoint for sending emails.

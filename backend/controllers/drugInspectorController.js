@@ -28,7 +28,7 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
       return res.status(400).send('No file uploaded.');
     }
 
-    const { name, Email_ID, password, district, state, phone_number, language } = req.body;
+    const { name, Email_ID, password, district, state, phone_number } = req.body;
 
     const Email_Validation = await Druginspector.findOne({ Email_ID });
     const PHno_Validation = await Druginspector.findOne({ phone_number });

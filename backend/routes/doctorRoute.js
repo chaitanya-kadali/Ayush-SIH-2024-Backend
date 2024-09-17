@@ -12,7 +12,7 @@ const router = express.Router();
 router.route("/doctor-reg").post(asyncMiddleware(createDoctor));
 
 //login for doctor
-router.route("/doctor-login").post(asyncMiddleware(DoctorLogin)); 
+router.route("/doctor-login").post(asyncMiddleware(DoctorLogin));
 
 //Doctor Dashboard
 router.route("/doctor-dashboard").post(asyncMiddleware(DoctorDashboard));
