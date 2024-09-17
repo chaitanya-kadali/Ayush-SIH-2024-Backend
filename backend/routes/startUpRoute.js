@@ -7,7 +7,8 @@ Startup_Dashboard,
 Startup_farmer_tab,
 Startup_docter_tab,
 StartupFeedback_upload,
-StartupFeedback_Get
+StartupFeedback_Get,
+StartupBaisic
 } = require("../controllers/startupController");
 
 
@@ -34,5 +35,7 @@ router.route("/StartupFeedback-post").post(asyncMiddleware(StartupFeedback_uploa
 //dashboard for StartupFeedback get
 router.route("/StartupFeedback-get").post(asyncMiddleware(StartupFeedback_Get));
 
+//dashboard for StartupFeedback get
+router.route("/startup-basic").post(asyncMiddleware(StartupBaisic));
 
 module.exports = router;
