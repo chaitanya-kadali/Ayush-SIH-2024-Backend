@@ -58,6 +58,7 @@ mongoose.connect(mongoUri)
   const status = require("./routes/statusRoute");
   const pdfQualityCheck=require("./routes/PdfQualityCheck");
   const verifyQuideline=require("./routes/VerifyQuidelineRoute");
+  const PeerForum=require("./routes/PeerForumRoute");
 
 // assigning the persons
   app.use("/api",farmer);
@@ -74,6 +75,7 @@ app.use("/api",tokenVerify);
 app.use("/api",status);
 app.use("/api",pdfQualityCheck);
 app.use("/api",verifyQuideline);
+app.use("/api",PeerForum);
 
 // Serve the static files (HTML, CSS, JS)
 app.use(express.static('public'));

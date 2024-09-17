@@ -198,12 +198,7 @@ exports.StartupFeedback_upload = catchAsyncErrors(async (req, res) => {
       return res.status(404).json({ success: false, message: 'Startup not found' });
     }
 
-    // Update the feedback field
-    if(StartUp.feedback){
-      StartUp.feedback=StartUp.feedback+"\n"+feedback;
-    }else{
-      StartUp.feedback=feedback;
-    }
+    StartUp.feedback.push(feedback);
 
     // Save the updated startup to the database
     await StartUp.save(); 
@@ -237,9 +232,21 @@ exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
   }
 });
 
-// exports.UpdateDashDetails = catchAsyncErrors(async(req,res)=>{
-//   const {  }=;
-// })
+exports.StartupDashInfoRetrieval = catchAsyncErrors(async(req,res)=>{
+  const { Email_ID }=req.body;
+  try{
+    const VerifyEmail=await StartupdashModel.findOne({Email_ID:Email_ID});
+    if(!VerifyEmail){
+      return res.status(404).json({success:false,message:"Startup Dash Model Doesn\'t exist"});
+    }
+    const StartupDetails=await StartupdashModel.find({Email_ID});
+    return res.status(201).json({success:true,message:"Startup Dash details",data:StartupDetails});
+  }
+  catch{
+    console.error('Error during feedback update:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+})
 
 // getbasic details
 exports.StartupBaisic= catchAsyncErrors(async (req, res) => {
@@ -256,3 +263,53 @@ exports.StartupBaisic= catchAsyncErrors(async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
+
+exports.EditStartupDash = catchAsyncErrors(async (req, res) => {
+  try {
+    const email = req.params.email;  // Using email from params
+    const updates = req.body;  // The new data sent from the client
+
+    // Find the current startup document by email
+    const existingStartup = await StartupdashModel.findOne({ Email: email });
+    if (!existingStartup) {
+      return res.status(404).json({ success: false, message: 'Startup not found' });
+    }
+
+    // Create an object to store fields that have changed
+    const updatedFields = {};
+    const changedAttributes = [];
+
+    // Check which fields have changed and update only those fields
+    for (const key in updates) {
+      if (updates[key] && updates[key] !== existingStartup[key]) {
+        updatedFields[key] = updates[key];  // Add the changed field to the update object
+        changedAttributes.push(key);        // Track the changed attribute
+      }
+    }
+
+    // If no fields are updated
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields to update' });
+    }
+
+    // Update the startup document with only the changed fields
+    const updatedStartup = await StartupdashModel.findOneAndUpdate(
+      { Email: email },
+      { $set: updatedFields },
+      { new: true }
+    );
+
+    // Return the updated document along with the changed attributes
+    res.status(200).json({
+      success: true,
+      message: 'Startup updated successfully',
+      changedAttributes: changedAttributes,  // Include the list of updated fields in the response
+      data: updatedStartup
+    });
+  } catch (error) {
+    // Catch any errors that occur during the operation
+    console.error('Error updating startup:', error);
+    res.status(500).json({ success: false, message: 'Error updating startup', error: error.message });
+  }
+});
+
