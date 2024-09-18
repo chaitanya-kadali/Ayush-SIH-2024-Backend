@@ -31,24 +31,23 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
     const PHno_Validation = await Licensingauthority.findOne({ mobile_no });
 
     if (Email_Validation) {
-      return res.status(400).json({ success: false, message: "Email already exists" });
+      return res.status(401).json({ success: false, message: "Email already exists" });
     }
 
     if (PHno_Validation) {
-      return res.status(400).json({ success: false, message: "Phone number already exists" });
+      return res.status(402).json({ success: false, message: "Phone number already exists" });
     }
-
+console.log("40");
     // Validate the request body using Joi (assuming this part is working, uncomment if necessary)
-    const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
+    // const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
+console.log("43");
 
-    if (error) {
-      return res.status(400).json({ success: false, message: "Schema validation failed", error: error.details[0].message });
-    }
+    
 
     // Hash the password for security
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-      // After the PDF is uploaded, save the Licensing Authority record
+
       const newLicensingAuthority = new Licensingauthority({
         name,
         Email_ID,
@@ -60,11 +59,13 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
         OrderDate,
         State,
         district,
+        Notification:[],
         role: "Licensing Authority",
         date: Date.now()
       });
 
       // Save the new Licensing Authority to the database
+      console.log(newLicensingAuthority);
       await newLicensingAuthority.save();
       res.status(201).json({ data: newLicensingAuthority, success: true, message: "Successfully signed up!" });
 
