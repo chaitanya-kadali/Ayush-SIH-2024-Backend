@@ -59,7 +59,7 @@ mongoose.connect(mongoUri)
   const pdfQualityCheck=require("./routes/PdfQualityCheck");
   const verifyQuideline=require("./routes/VerifyQuidelineRoute");
   const PeerForum=require("./routes/PeerForumRoute");
-  const Uploadpdf=require("./routes/pdfUploadingRoute");
+  const Pdfmanagement=require("./routes/pdfUploadingRoute");
 
 // assigning the persons
   app.use("/api",farmer);
@@ -72,12 +72,14 @@ mongoose.connect(mongoUri)
 app.use("/api",chat);
 app.use("/api",district);
 app.use("/api",sendEmail);
+
+
 app.use("/api",tokenVerify);
 app.use("/api",status);
 app.use("/api",pdfQualityCheck);
 app.use("/api",verifyQuideline);
 app.use("/api",PeerForum);
-app.use("/api",Uploadpdf);
+app.use("/api",Pdfmanagement);
 
 // Serve the static files (HTML, CSS, JS)
 app.use(express.static('public'));
