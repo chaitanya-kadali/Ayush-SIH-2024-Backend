@@ -76,17 +76,19 @@ exports.isLicensed = catchAsyncErrors( async (req,res) => {    // return {succes
 exports.isNotifyEligible = catchAsyncErrors(async (req, res) => {
     const { Startup_Email } = req.body;
     try {
-        const Startup_Exist = await LA_Notification.findOne({ Startup_Email:Startup_Email });
+        console.log("sttp  ");
+        const Startup_Exist = await LA_Notification.findOne({ Startup_Email });
+        
         if (!Startup_Exist) {
             return res.status(201).json({ success: true });
         }
-        
+        console.log("donndddfsgd");
         const storedDate = Startup_Exist.date; // Ensure date is a Date object
-
+        console.log("donnddd");
         const dateFromString = new Date(storedDate);
 
         const currentDate = new Date();
-
+        
         // Calculate the difference in milliseconds
         const differenceInMilliseconds = currentDate - dateFromString;
 
