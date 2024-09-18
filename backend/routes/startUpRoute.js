@@ -7,7 +7,7 @@ Startup_Dashboard,
 Startup_farmer_tab,
 Startup_docter_tab,
 StartupDashInfoRetrieval,
-StartupFeedback_upload,
+StartupFeedback_post,
 StartupFeedback_Get,
 StartupBaisic,
 EditStartupDash
@@ -35,15 +35,15 @@ router.route("/startup-dash-retrieval").post(asyncMiddleware(StartupDashInfoRetr
 router.route("/doctertab-in-startup").post(asyncMiddleware(Startup_docter_tab)); 
 
 //dashboard for StartupFeedback post
-router.route("/StartupFeedback-post").post(asyncMiddleware(StartupFeedback_upload));
+router.route("/startup-feedback-post").post(asyncMiddleware(StartupFeedback_post));
 
 //dashboard for StartupFeedback get
-router.route("/StartupFeedback-get").post(asyncMiddleware(StartupFeedback_Get));
+router.route("/startup-feedback-get").post(asyncMiddleware(StartupFeedback_Get));
 
 //dashboard for StartupFeedback get
 router.route("/startup-basic").post(asyncMiddleware(StartupBaisic));
 
 //dashboard for startup farmer
-router.route("/updateStartup/:email").put(asyncMiddleware(EditStartupDash)); 
+router.route("/update-fill-application/:email").put(asyncMiddleware(EditStartupDash)); 
 
 module.exports = router;

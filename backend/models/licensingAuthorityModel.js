@@ -9,7 +9,7 @@ const LiscensingAuthoritySchema=mongoose.Schema({
     Qualification:String,
     OrderReferenceNo:Number,
     OrderDate:String,
-    OrderPdfCopy:{
+    Pdf:{
         type:String,
         required:true
     },
@@ -18,7 +18,7 @@ const LiscensingAuthoritySchema=mongoose.Schema({
     Notification:{
         type: [String],  // Ensure that this is an array of strings
         default: [],
-      }
+    }
 });
 
 module.exports = mongoose.model("LiscensingAuthority",LiscensingAuthoritySchema);

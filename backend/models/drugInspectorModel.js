@@ -7,13 +7,7 @@ const mongoose = require("mongoose");
       password:String,
       district:String,
       state:String,
-      phone_number:Number,
-      pdf:{
-        type:String,
-        // required:true
-      }
-
-  // no need of language
+      phone_number:Number
 
   });
 
