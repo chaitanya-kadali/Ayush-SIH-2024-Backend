@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 
 const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
@@ -7,20 +8,11 @@ const {
     LicensingAuthorityDashboard,
     LANotificationpost,
     LANotificationSendingStartups,
-    LA_NotificationGet,
-    LA_NotificationValid
+    LA_NotificationGet
 } = require("../controllers/licensingAuthorityController");
 
-const router = express.Router();
-const multer = require("multer");//object for pdf uploading
-
-// const jwt = require('jsonwebtoken');  //object to Generate JWT token
-
-// Multer setup
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 //registration for liscensingAuthority
-router.route("/licensingAuthority-reg").post(upload.single('OrderPdfCopy'),createLicensingAuthority);
+router.route("/licensingAuthority-reg").post(createLicensingAuthority);
 
 //Login for liscensingAuthority
 router.route("/authority-login").post(asyncMiddleware(LicensingAuthorityLogin));
@@ -36,4 +28,5 @@ router.route("/LA-NotificationSendingStartups").post(asyncMiddleware(LANotificat
 
 //Dashboard for LA-NotificationGet
 router.route("/LA-NotificationGet").post(asyncMiddleware(LA_NotificationGet));
+
 module.exports = router;

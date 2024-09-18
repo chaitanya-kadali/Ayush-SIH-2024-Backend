@@ -9,7 +9,7 @@ const{
 }=require("../controllers/pdfController");
 
 // uploading the pdf
-router.route("/upload-pdf").post(uploadPdf); 
+router.route("/upload-pdf").post(uploadPdf);
 
 // ge the pdf route
 router.route("/get-pdf").post(getPdf); 
