@@ -126,6 +126,6 @@ const cleanUpImages = (imageDir) => {
 const router = express.Router();
 
 // pdf quality check route
-router.route('/pdfQualityCheck').post(upload.single('pdf'), PdfQualityCheck);
+router.route('/quality-check').post(upload.single('pdf'), PdfQualityCheck);
 
 module.exports = router;

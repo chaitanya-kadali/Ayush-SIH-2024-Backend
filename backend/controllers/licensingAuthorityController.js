@@ -20,14 +20,8 @@ const upload = multer({ storage: storage });
 
 // Registration for LiscensingAuthority
 exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
-  console.log("AAAAABBBB 22 ->");
 
   try {
-    // Check if a file was uploaded
-    if (!req.file) {
-      console.log("AAAAABBBB 25->");
-      return res.status(400).json({ success: false, message: 'No file uploaded.' }); // No file uploaded error
-    }
 
     // Extract form data
     const { name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district } = req.body;
@@ -44,29 +38,16 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
       return res.status(400).json({ success: false, message: "Phone number already exists" });
     }
 
-    console.log("AAAAABBBB 42 ->");
-
     // Validate the request body using Joi (assuming this part is working, uncomment if necessary)
-    // const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
+    const { error } = LicensingAuthorityschema.validate({ name, Email_ID, password, mobile_no, designation, Qualification, OrderReferenceNo, OrderDate, State, district });
 
-    // if (error) {
-    //   console.log("AAAAABBBB 47 ->");
-    //   return res.status(400).json({ success: false, message: "Schema validation failed", error: error.details[0].message });
-    // }
+    if (error) {
+      return res.status(400).json({ success: false, message: "Schema validation failed", error: error.details[0].message });
+    }
 
     // Hash the password for security
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log("1st phase");
-    // Upload PDF to GridFS
-    const db = mongoose.connection.db;
-    const bucket = new GridFSBucket(db);
-    const pdfBuffer = req.file.buffer;
-    const uploadStream = bucket.openUploadStream(req.file.originalname);
-
-    // Handle events for uploadStream
-    uploadStream.on('finish', async () => {
-      console.log("2st phase");
       // After the PDF is uploaded, save the Licensing Authority record
       const newLicensingAuthority = new Licensingauthority({
         name,
@@ -77,7 +58,6 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
         Qualification,
         OrderReferenceNo,
         OrderDate,
-        OrderPdfCopy: uploadStream.id, // Save the GridFS file ID
         State,
         district,
         role: "Licensing Authority",
@@ -87,15 +67,6 @@ exports.createLicensingAuthority = catchAsyncErrors(async (req, res) => {
       // Save the new Licensing Authority to the database
       await newLicensingAuthority.save();
       res.status(201).json({ data: newLicensingAuthority, success: true, message: "Successfully signed up!" });
-    });
-
-    uploadStream.on('error', (err) => {
-      console.error('Error uploading PDF:', err);
-      res.status(500).json({ success: false, message: 'Error uploading PDF', error: err.message });
-    });
-
-    // End the upload stream with the PDF buffer
-    uploadStream.end(pdfBuffer);
 
   } catch (error) {
     // Catch any errors that occur during the operation
@@ -112,7 +83,7 @@ exports.LicensingAuthorityLogin = catchAsyncErrors(async (req, res) => {
   
   try {
     // Check if LicensingAuthorityDetails exists in the database
-    const LicensingAuthorityDetails = await Licensingauthority.findOne({ Email_ID });
+    const LicensingAuthorityDetails = await Licensingauthority.findOne({ Email_ID:Email_ID });
 
     if (!LicensingAuthorityDetails) {
       // LicensingAuthorityDetails not found, send error response
@@ -217,7 +188,6 @@ exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
     await newLANotification.save();
 
     // Return success response
-    console.log("herrrrrrr");
     return res.status(201).json({ success: true, message: 'Notification posted successfully', data: newLANotification });
 
   } catch (error) {

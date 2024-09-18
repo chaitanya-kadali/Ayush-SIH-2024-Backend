@@ -3,13 +3,8 @@ const Druginspector = require("../models/drugInspectorModel"); // object of Drug
 const Startup = require("../models/startupModel");// object of startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT=require("../middleware/authMiddleware");  //validate the Token after login
-const {Druginspectorschema}=require("../middleware/schemaValidator");
-const { GridFSBucket } = require('mongodb');
-const mongoose = require('mongoose');
-const multer = require("multer");  //object for pdf uploading
-// Multer setup
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const {Druginspectorschema}=require("../middleware/schemaValidator"); //object for pdf uploading
+
 
 require('dotenv').config();
 
@@ -18,15 +13,6 @@ const jwt = require('jsonwebtoken');  //object to Generate JWT token
 
 // Registration for doctor
 exports.createDruginspector = catchAsyncErrors(async (req, res) => {
-  // const uploadMiddleware = upload.single('pdf');
-
-  // uploadMiddleware(req, res, async (err) => {
-  //   if (err) {
-  //     return res.status(500).send(err.message);
-  //   }
-  //   if (!req.file) {
-  //     return res.status(400).send('No file uploaded.');
-  //   }
 
     const { name, Email_ID, password, district, state, phone_number } = req.body;
 
@@ -43,27 +29,17 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
     }
 
     // Validate the request body using Joi
-    // const { error } = Druginspectorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
+    const { error } = Druginspectorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
 
-    // if (error) {
-    //   return res.status(400).json({ success: false, error: error.details[0].message });
-    // }
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message });
+    }
 
     try {
       // Hash the password
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Upload PDF to GridFS
-      // const db = mongoose.connection.db;
-      // const bucket = new GridFSBucket(db);
-      // const pdfBuffer = req.file.buffer;
-      // const uploadStream = bucket.openUploadStream(req.file.originalname);
-
-      // uploadStream.end(pdfBuffer);
-
-      // uploadStream.on('finish', async () => {
-        // Create a new Druginspector with the uploaded PDF's file ID
         const newDruginspector = new Druginspector({
           name,
           Email_ID,
@@ -71,8 +47,6 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
           district,
           state,
           phone_number,
-          // language,
-          // pdf: uploadStream.id, // Save the GridFS file ID
           role: "Drug Inspector",
           date: Date.now()
         });
@@ -81,11 +55,6 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
         await newDruginspector.save();
 
         res.status(201).json({ data: newDruginspector, success: true });
-      // });
-
-      // uploadStream.on('error', (err) => {
-      //   res.status(500).send('Error uploading PDF: ' + err.message);
-      // });
 
     } catch (error) {
       console.error('Error:', error);

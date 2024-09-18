@@ -1,35 +1,17 @@
 
-const express=require("express");
-
-const { GridFSBucket } = require('mongodb');
-const mongoose = require('mongoose');
-
 const bcrypt = require('bcryptjs'); // object for password hashing
 const Doctor = require("../models/doctormodel"); // object of doctor collection
 const Startup = require("../models/startupModel");// object of startup collection
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 const authenticateJWT = require("../middleware/authMiddleware");  //validate the Token after login
 const { Doctorschema } = require("../middleware/schemaValidator");
-const multer = require("multer");  //object for pdf uploading
+
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token 
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
 // Registration for doctor
 exports.createDoctor = catchAsyncErrors(async (req, res) => {
-  const uploadMiddleware = upload.single('pdf');
-
-  // Invoke the multer middleware manually
-  uploadMiddleware(req, res, async (err) => {
-    if (err) {
-      return res.status(500).send(err.message);
-    }
-    if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-    }
 
     const { name, Email_ID, password, district, state, phone_number } = req.body;
 
@@ -45,27 +27,19 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
     }
 
     // Validate the request body using Joi
-    // const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
+    const { error } = Doctorschema.validate({ name, Email_ID, password, district, state, phone_number, language });
 
-    // if (error) {
-    //   // If validation fails, return the error message
-    //   return res.status(400).json({ success: false, error: error.details[0].message });
-    // }
+    if (error) {
+      // If validation fails, return the error message
+      return res.status(400).json({ success: false, error: error.details[0].message });
+    }
 
     try {
       // Hash the password
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      const db = mongoose.connection.db;
-      const bucket = new GridFSBucket(db);
-      const pdfBuffer = req.file.buffer;
-      const uploadStream = bucket.openUploadStream(req.file.originalname);
-
-      uploadStream.end(pdfBuffer);
-
-      uploadStream.on('finish', async () => {
-        // After the PDF is uploaded, save the doctor record
+    
         const newDoctor = new Doctor({
           name,
           Email_ID,
@@ -73,24 +47,17 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
           district,
           state,
           phone_number,
-          pdf: uploadStream.id, // Save the GridFS file ID
           role: "Doctor"
         });
 
         await newDoctor.save();
         res.status(201).json(newDoctor);
-      });
-
-      uploadStream.on('error', (err) => {
-        res.status(500).send('Error uploading PDF: ' + err.message);
-      });
 
     } catch (error) {
       console.error('Error:', error);
       res.status(400).json({ error: error.message, success: false });
     }
   });
-});
 
 
 

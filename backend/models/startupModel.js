@@ -12,6 +12,6 @@ const mongoose = require("mongoose");
     district:String,
     phone_number:Number          /* added number */
   
- })
+ });
 
 module.exports = mongoose.model("startup",Startup);
