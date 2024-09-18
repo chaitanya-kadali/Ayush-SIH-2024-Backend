@@ -18,7 +18,7 @@ const LiscensingAuthoritySchema=mongoose.Schema({
     Notification:{
         type: [String],  // Ensure that this is an array of strings
         default: [],
-      }
+    }
 });
 
 module.exports = mongoose.model("LiscensingAuthority",LiscensingAuthoritySchema);
