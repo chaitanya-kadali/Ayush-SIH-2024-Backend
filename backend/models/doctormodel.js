@@ -7,11 +7,7 @@ const mongoose = require("mongoose");
       password:String,
       district:String,
       state:String,
-      phone_number:Number,
-      pdf:{
-        type:String
-      }
-
+      phone_number:Number
   });
 
 module.exports = mongoose.model("doctor",Doctor);

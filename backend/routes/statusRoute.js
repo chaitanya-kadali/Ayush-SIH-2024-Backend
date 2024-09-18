@@ -19,7 +19,7 @@ router.route("/isDrugInspectorAssigned-false").get(asyncMiddleware(isNotAssigned
 router.route("/isDrugInspectorAssigned-true").get(asyncMiddleware(isAssigned)); 
 
 // --/is Eligible to click on Notify Button
-router.route("/isNotifyEligible").post(asyncMiddleware(isNotifyEligible)); 
+router.route("/is-notify-eligible").post(asyncMiddleware(isNotifyEligible)); 
 
 router.route("/status-trackpad").post(asyncMiddleware(statusTrackpad)); 
 
