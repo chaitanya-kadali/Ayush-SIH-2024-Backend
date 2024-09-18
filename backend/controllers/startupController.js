@@ -242,12 +242,12 @@ exports.StartupDashInfoRetrieval = catchAsyncErrors(async(req,res)=>{
 
 // getbasic details
 exports.StartupBaisic= catchAsyncErrors(async (req, res) => {
-  const { Email } = req.body;
+  const { Email_ID } = req.body;
   
   try {
     // Find the startup by email
-    const StartUp = await Startup.findOne({ Email });
-
+    const StartUp = await Startup.findOne({ Email_ID});
+    console.log(StartUp,"jdndn    -------------- \n\n\n\n");
     // Return a success response
     res.status(200).json({ success: true, message: 'Startup found ', basicdata: StartUp });
   } catch (error) {

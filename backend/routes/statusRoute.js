@@ -4,6 +4,9 @@ const {
 isAssigned,
 isNotAssigned,
 isNotifyEligible,
+isAccepted,
+isRejected,
+isLicensed,
 statusTrackpad
 } = require("../controllers/statusController");
 
