@@ -18,6 +18,15 @@ router.route("/isDrugInspectorAssigned-false").get(asyncMiddleware(isNotAssigned
 // --/isDrugInspectorAssigned-true
 router.route("/isDrugInspectorAssigned-true").get(asyncMiddleware(isAssigned)); 
 
+// -- / isDrugInspectorAccepted-true
+router.route("/isDrugInspectorAccepted-true").get(asyncMiddleware(isAccepted)); 
+
+// -- / isDrugInspectorRejected-true
+router.route("/isDrugInspectorRejected-true").get(asyncMiddleware(isRejected)); 
+
+// -- /isLicensed-true
+router.route("/isLicensed-true").get(asyncMiddleware(isLicensed)); 
+
 // --/is Eligible to click on Notify Button
 router.route("/is-notify-eligible").post(asyncMiddleware(isNotifyEligible)); 
 
