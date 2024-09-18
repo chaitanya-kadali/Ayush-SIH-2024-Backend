@@ -3,7 +3,8 @@ const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
 isAssigned,
 isNotAssigned,
-isNotifyEligible
+isNotifyEligible,
+statusTrackpad
 } = require("../controllers/statusController");
 
 const router = express.Router();
@@ -16,6 +17,8 @@ router.route("/isDrugInspectorAssigned-true").get(asyncMiddleware(isAssigned));
 
 // --/is Eligible to click on Notify Button
 router.route("/isNotifyEligible").post(asyncMiddleware(isNotifyEligible)); 
+
+router.route("/status-trackpad").post(asyncMiddleware(statusTrackpad)); 
 
 
 module.exports = router;
