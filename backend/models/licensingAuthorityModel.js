@@ -9,7 +9,7 @@ const LiscensingAuthoritySchema=mongoose.Schema({
     Qualification:String,
     OrderReferenceNo:Number,
     OrderDate:String,
-    OrderPdfCopy:{
+    Pdf:{
         type:String,
         required:true
     },

@@ -9,11 +9,8 @@ const mongoose = require("mongoose");
       state:String,
       phone_number:Number,
       pdf:{
-        type:String,
-        required:true
+        type:String
       }
-
-  // no need of language
 
   });
 

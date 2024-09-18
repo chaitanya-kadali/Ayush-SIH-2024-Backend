@@ -149,6 +149,6 @@ if (!fs.existsSync('uploads')) {
 const router = express.Router();
 
 // checking the pdf following the guide line rules
-router.route('/Quideline-check').post(upload.single('pdf'), VerifyQuideline);
+router.route('/guideline-check').post(upload.single('pdf'), VerifyQuideline);
 
 module.exports = router;
