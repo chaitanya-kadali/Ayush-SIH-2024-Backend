@@ -7,7 +7,7 @@ const LiscensingAuthoritySchema=mongoose.Schema({
     mobile_no:Number,
     designation:String,
     Qualification:String,
-    OrderReferenceNo:Number,
+    OrderReferenceNo:String,
     OrderDate:String,
     State:String,
     district:String,

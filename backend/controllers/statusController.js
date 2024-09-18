@@ -3,76 +3,122 @@ const LA_Notification=require("../models/LA_Notification");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
 
 
-// --/isDrugInspectorAssigned-false
 
-exports.isNotAssigned = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
-    // GET function
-    console.log("called");
-    try{
-        console.log("called");
-        const statusList = await Status.find({ isDrugInspectorAssigned: false });
-        res.status(200).json({ success: true,pendingList:statusList, message: 'Startup Details for farmer'});
+//  ---  /isDrugInspectorAssigned-false
+
+exports.isNotAssigned = catchAsyncErrors(async (req, res) => {
+
+    console.log("isNotAssigned");
+    try {
+        const statusList = await Status.find(
+            { isDrugInspectorAssigned: false }, // Filter condition
+            { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
+        );
+        // Check if any results were found
+        if (statusList.length === 0) {
+            return res.status(200).json({ success: true, pendingList: [], message: 'No emails found' });
+        }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+        // Return the list of emails
+        res.status(200).json({ success: true, pendingList:statusList, message: 'Success' });
+
     } catch (error) {
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
-//  ---  /isDrugInspectorAssigned-true
 
-exports.isAssigned = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
-    // GET function
-    console.log("called not 24");
-    try{
+exports.isAssigned = catchAsyncErrors(async (req, res) => {
 
-        const statusList = await Status.find({ isDrugInspectorAssigned: true });
-        res.status(200).json({ success: true,assignedList:statusList, message: 'Startup Details for farmer'});
+    console.log("Fetching list of assigned Drug Inspectors");
+    try {
+        const statusList = await Status.find(
+            { isDrugInspectorAssigned: true }, // Filter condition
+            { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
+        );
+        // Check if any results were found
+        if (statusList.length === 0) {
+            return res.status(200).json({ success: true, assignedList: [], message: 'No emails found' });
+        }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+        // Return the list of emails
+        res.status(200).json({ success: true, assignedList: statusList, message: 'Success' });
+
     } catch (error) {
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
+
+
 
 // isDrugInspectorAccepted-true
-exports.isAccepted = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
-    // GET function
-    console.log("called not 24");
-    try{
 
-        const statusList = await Status.find({ isDrugInspectorAccepted: true });
-        res.status(200).json({ success: true,acceptedList:statusList, message: 'Startup Details for farmer'});
+exports.isAccepted = catchAsyncErrors(async (req, res) => {
+
+    console.log("Fetching list of assigned Drug Inspectors");
+    try {
+        const statusList = await Status.find(
+            { isDrugInspectorAccepted: true }, // Filter condition
+            { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
+        );
+        // Check if any results were found
+        if (statusList.length === 0) {
+            return res.status(200).json({ success: true, acceptedList: [], message: 'No emails found' });
+        }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+        // Return the list of emails
+        res.status(200).json({ success: true, acceptedList: statusList, message: 'Success' });
+
     } catch (error) {
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
 
-// isDrugInspectorAccepted-false
-exports.isNotAccepted = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
-    // GET function
-    console.log("called not 24");
-    try{
 
-        const statusList = await Status.find({ isDrugInspectorAccepted: false });
-        res.status(200).json({ success: true,rejectedList:statusList, message: 'Startup Details for farmer'});
+// isDrugInspectorRejected
+exports.isRejected = catchAsyncErrors(async (req, res) => {
+
+    try {
+        const statusList = await Status.find(
+            { isDrugInspectorRejected: false }, // Filter condition
+            { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
+        );
+        // Check if any results were found
+        if (statusList.length === 0) {
+            return res.status(200).json({ success: true, rejectedList: [], message: 'No emails found' });
+        }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+        // Return the list of emails
+        res.status(200).json({ success: true, rejectedList: statusList, message: 'Success' });
+
     } catch (error) {
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
 // isLicensed-true
-exports.isLicensed = catchAsyncErrors( async (req,res) => {    // return {success , pendingList}
-    // GET function
-    console.log("called not 24");
-    try{
+exports.isLicensed = catchAsyncErrors(async (req, res) => {
 
-        const statusList = await Status.find({ isLicensed: true });
-        res.status(200).json({ success: true,licensedList:statusList, message: 'Startup Details for farmer'});
+    try {
+        const statusList = await Status.find(
+            { isLicensed: true }, // Filter condition
+            { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
+        );
+        // Check if any results were found
+        if (statusList.length === 0) {
+            return res.status(200).json({ success: true, licensedList: [], message: 'No emails found' });
+        }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+        // Return the list of emails
+        res.status(200).json({ success: true, licensedList: statusList, message: 'Success' });
+
     } catch (error) {
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
-
 exports.isNotifyEligible = catchAsyncErrors(async (req, res) => {
     const { Startup_Email } = req.body;
     try {
@@ -109,3 +155,15 @@ exports.isNotifyEligible = catchAsyncErrors(async (req, res) => {
 
 
 
+exports.statusTrackpad = catchAsyncErrors(async (req, res) => {
+    const { Startup_Email } = req.body;
+    try {
+       const  Email_ID = Startup_Email;
+       const statusData = await Status.find({ Email_ID });
+       console.log(statusData);
+       res.status(200).json({ success: true,statusInfo:statusData, message: 'Success'});
+    } catch (error) { // Included error parameter
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
