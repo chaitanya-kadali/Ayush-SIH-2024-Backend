@@ -12,6 +12,7 @@ exports.CreateQuestion = catchAsyncErrors(async (req, res) => {
       // If the question does not exist, create a new document with an empty answer array
       const newPeerForum = new Peerforum({
         Question: Question,
+        
         answer: []  // Initialize with an empty array
       });
       await newPeerForum.save();
