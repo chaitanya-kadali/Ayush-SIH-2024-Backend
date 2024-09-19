@@ -7,7 +7,8 @@ const mongoose = require("mongoose");
       password:String,
       district:String,
       state:String,
-      phone_number:Number
+      phone_number:Number,
+      isLaPermitted:Boolean
 
   });
 

@@ -4,6 +4,7 @@ const {
 createDoctor,
 DoctorLogin,
 DoctorDashboard,
+grantPermission
 } = require("../controllers/doctorController");
 
 const router = express.Router();
@@ -17,5 +18,7 @@ router.route("/doctor-login").post(asyncMiddleware(DoctorLogin));
 //Doctor Dashboard
 router.route("/doctor-dashboard").post(asyncMiddleware(DoctorDashboard));
 
+//granting of permission
+router.route("/grant-permission-to-doctor").post(asyncMiddleware(grantPermission));
 
 module.exports = router;

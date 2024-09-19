@@ -3,7 +3,8 @@ const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
     createDruginspector,
     DruginspectorLogin,
-    DruginspectorDashboard
+    DruginspectorDashboard,
+    grantPermission
 } = require("../controllers/drugInspectorController");
 
 const router = express.Router();
@@ -16,5 +17,8 @@ router.route("/drugInspector-login").post(asyncMiddleware(DruginspectorLogin));
 
 //Doctor Dashboard
 router.route("/drugInspector-dashboard").post(asyncMiddleware(DruginspectorDashboard));
+
+//granting of permission
+router.route("/grant-permission-to-druginspector").post(asyncMiddleware(grantPermission));
 
 module.exports = router;
