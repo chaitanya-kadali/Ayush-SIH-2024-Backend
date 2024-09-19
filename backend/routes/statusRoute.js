@@ -7,7 +7,11 @@ isNotifyEligible,
 isAccepted,
 isRejected,
 isLicensed,
-statusTrackpad
+statusTrackpad,
+makeItAssigned,
+makeItAccepted,
+makeItRejected,
+makeItLicensed
 } = require("../controllers/statusController");
 
 const router = express.Router();
@@ -32,5 +36,11 @@ router.route("/is-notify-eligible").post(asyncMiddleware(isNotifyEligible));
 
 router.route("/status-trackpad").post(asyncMiddleware(statusTrackpad)); 
 
+router.route("/make-it-assign").post(asyncMiddleware(makeItAssigned)); 
 
+router.route("/make-it-accepted").post(asyncMiddleware(makeItAccepted));
+
+router.route("/make-it-rejected").post(asyncMiddleware(makeItRejected))
+
+router.route("/make-it-licensed").post(asyncMiddleware(makeItLicensed))
 module.exports = router;

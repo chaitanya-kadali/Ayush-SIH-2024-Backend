@@ -113,7 +113,7 @@ const VerifyQuideline = catchAsyncErrors( async (req, res) => {
     if (allPagesClear) {
       res.status(200).json({ success: true, message: 'PDF verified. Date is within the last two months.' });
     } else {
-      res.status(400).json({ success: false, message: 'PDF issue date is more than two months old or date not found.' });
+      res.status(200).json({ success: false, message: 'PDF issue date is more than two months old or date not found.' });
     }
   } catch (error) {
     console.error('Error:', error);

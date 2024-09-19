@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 	isDrugInspectorAssigned: Boolean,
 	isDrugInspectorAccepted : Boolean, // (for frontend : if accepted is false the whole stuff should get RED from here to end)
 	isDrugInspectorRejected : Boolean,
-	isLicensed: Boolean,
+	isLicensed: Boolean
   });
 
 module.exports = mongoose.model("status",Status);

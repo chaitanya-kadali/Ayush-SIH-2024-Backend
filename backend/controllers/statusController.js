@@ -1,17 +1,14 @@
 const Status = require("../models/applicationStatus");
 const LA_Notification=require("../models/LA_Notification");
+
 const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by default error catcher
-
-
-
-//  ---  /isDrugInspectorAssigned-false
 
 exports.isNotAssigned = catchAsyncErrors(async (req, res) => {
 
     console.log("isNotAssigned");
     try {
         const statusList = await Status.find(
-            { isDrugInspectorAssigned: false }, // Filter condition
+            { FilledApplication:true }, // Filter condition
             { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
         );
         // Check if any results were found
@@ -27,6 +24,30 @@ exports.isNotAssigned = catchAsyncErrors(async (req, res) => {
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
+
+//  ---  /isDrugInspectorAssigned-false
+
+// exports.isNotAssigned = catchAsyncErrors(async (req, res) => {
+
+//     console.log("isNotAssigned");
+//     try {
+//         const statusList = await Status.find(
+//             { isDrugInspectorAssigned: false }, // Filter condition
+//             { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
+//         );
+//         // Check if any results were found
+//         if (statusList.length === 0) {
+//             return res.status(200).json({ success: true, pendingList: [], message: 'No emails found' });
+//         }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+//         // Return the list of emails
+//         res.status(200).json({ success: true, pendingList:statusList, message: 'Success' });
+
+//     } catch (error) {
+//         console.error('Error during fetching startups:', error);
+//         res.status(500).json({ success: false, error: 'Internal server error' });
+//     }
+// });
 
 exports.isAssigned = catchAsyncErrors(async (req, res) => {
 
@@ -163,6 +184,74 @@ exports.statusTrackpad = catchAsyncErrors(async (req, res) => {
        console.log(statusData);
        res.status(200).json({ success: true,statusInfo:statusData, message: 'Success'});
     } catch (error) { // Included error parameter
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+exports.makeItAssigned=catchAsyncErrors(async(req,res)=>{
+    const { Email_ID }=req.body;
+    try{
+        const VerifyEmail=await Status.findOne({Email_ID:Email_ID});
+        if(!VerifyEmail){
+            return res.status(404).json({success:true,message:"Stratup not Found"});
+        }
+        VerifyEmail.isDrugInspectorAssigned=true;
+        await VerifyEmail.save();
+        return res.status(201).json({success:true,message:"successfully assgined true foor drug inspector"});
+    }
+    catch(error){
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+exports.makeItAccepted=catchAsyncErrors(async(req,res)=>{
+    const { Email_ID }=req.body;
+    try{
+        const VerifyEmail=await Status.findOne({Email_ID:Email_ID});
+        if(!VerifyEmail){
+            return res.status(404).json({success:true,message:"Stratup not Found"});
+        }
+        VerifyEmail.isDrugInspectorAccepted=true;
+        await VerifyEmail.save();
+        return res.status(201).json({success:true,message:"successfully assgined true foor drug inspector"});
+    }
+    catch(error){
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+exports.makeItRejected=catchAsyncErrors(async(req,res)=>{
+    const { Email_ID }=req.body;
+    try{
+        const VerifyEmail=await Status.findOne({Email_ID:Email_ID});
+        if(!VerifyEmail){
+            return res.status(404).json({success:true,message:"Stratup not Found"});
+        }
+        VerifyEmail.isDrugInspectorRejected=true;
+        await VerifyEmail.save();
+        return res.status(201).json({success:true,message:"successfully assgined true foor drug inspector"});
+    }
+    catch(error){
+        console.error('Error during fetching startups:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+exports.makeItLicensed=catchAsyncErrors(async(req,res)=>{
+    const { Email_ID }=req.body;
+    try{
+        const VerifyEmail=await Status.findOne({Email_ID:Email_ID});
+        if(!VerifyEmail){
+            return res.status(404).json({success:true,message:"Stratup not Found"});
+        }
+        VerifyEmail.isLicensed=true;
+        await VerifyEmail.save();
+        return res.status(201).json({success:true,message:"successfully assgined true foor drug inspector"});
+    }
+    catch(error){
         console.error('Error during fetching startups:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
