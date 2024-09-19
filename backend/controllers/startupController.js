@@ -103,7 +103,6 @@ exports.Startup_Dashboard = catchAsyncErrors(async (req, res) => {
   const { Email, PANno, GSTno, websiteAddress, certificateNo, CompanyDOI, IssuuingAuthority, IE_code, IE_DOI } = req.body;
 
   try {
-
         const newStartupdashModel = new StartupdashModel({
           Email,
           PANno,
@@ -116,7 +115,9 @@ exports.Startup_Dashboard = catchAsyncErrors(async (req, res) => {
           IE_DOI,
           role: "Startup"
         });
-
+        const verifyEmail=await Status.findOne({Email_ID:Email});
+        verifyEmail.FilledApplication=true;
+        await verifyEmail.save();
         // Save the Startup Dashboard to the database
         await newStartupdashModel.save();
         res.status(201).json({ success: true, message: 'Dashboard details successfully saved', newStartupdashModel: newStartupdashModel });
@@ -178,7 +179,7 @@ exports.Startup_farmer_tab =catchAsyncErrors(async (req,res)=>{
   
 // Uploading Feedback from liscensingAuthority into Database
 exports.StartupFeedback_post = catchAsyncErrors(async (req, res) => {
-  const { Email, feedback } = req.body;
+  const { Email, feedback } = req.body; //Startup Email_ID
   
   try {
 
@@ -189,6 +190,13 @@ exports.StartupFeedback_post = catchAsyncErrors(async (req, res) => {
     if (!StartUp) {
       return res.status(404).json({ success: false, message: 'Startup not found' });
     }
+
+    console.log("Startup email",Email);
+    const message = feedback;
+    // const response =await axios.post("http://localhost:5002/api/send-email",{ Email, message });
+    // if(!response.data.success){
+    //   console.log("eror : email is not sent");
+    // }
 
     StartUp.feedback.push(feedback);
 
