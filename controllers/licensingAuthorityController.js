@@ -163,7 +163,7 @@ exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
     // Find thel iscensing Authority by matching the district
     const licensingAuthority = await Licensingauthority.findOne();
     if (!licensingAuthority) {
-      return res.status(404).json({ success: false, error: 'liscensing Authority not found for this district' });
+      return res.status(404).json({ success: false, error: 'liscensing Authority not found ' });
     }
 
     const email = licensingAuthority.Email_ID;

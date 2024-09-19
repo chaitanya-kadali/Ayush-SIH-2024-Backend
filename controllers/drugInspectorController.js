@@ -47,6 +47,7 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
           district,
           state,
           phone_number,
+          isLaPermitted:false,
           role: "Drug Inspector",
           date: Date.now()
         });
@@ -83,6 +84,9 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
 
     // Passwords don't match, send error response
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
+    }
+    if(!DruginspectorDetails.isLaPermitted){
+      return res.status(201).json({success:false,mesasge:"you are not authorised yet"});
     }
     const token = jwt.sign(
       { id: DruginspectorDetails._id, Email_ID: DruginspectorDetails.Email_ID },  // Payload data
@@ -124,3 +128,18 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
     })
   });
 
+
+  exports.grantPermission=catchAsyncErrors(async(req,res)=>{
+    const { Email_ID }=req.body;
+    try{
+        const verifyDruginspector=await Druginspector.findOne({Email_ID});
+        if(!verifyDruginspector){
+          return res.status(404).json({success:false,message:"Doctor not found"});
+        }
+        Druginspector.isLaPermitted=true;
+        await Druginspector.save();
+    }catch(error){
+      console.error('Error during login:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+  });
