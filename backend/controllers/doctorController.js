@@ -47,6 +47,7 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
           district,
           state,
           phone_number,
+          isLaPermitted:false,
           role: "Doctor"
         });
 
@@ -77,16 +78,18 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
     // Compare passwords
     const passwordMatch = await bcrypt.compare(password, DoctorDetails.password);
     if (!passwordMatch) {
-
     // Passwords don't match, send error response
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
+    }
+
+    if(!DoctorDetails.isLaPermitted){
+      return res.status(201).json({success:false,mesasge:"you are not authorised yet"});
     }
     const token = jwt.sign(
       { id: DoctorDetails._id, Email_ID: DoctorDetails.Email_ID },  // Payload data
       process.env.JWT_SECRET,  // Secret key
       { expiresIn: '1h' }  // Token expiry time (1 hour)
     );
-
     res.json({ success: true, message: 'Login successful' ,token: token, DoctorDetails: DoctorDetails });
     }
     catch (error) {
@@ -120,3 +123,18 @@ exports.createDoctor = catchAsyncErrors(async (req, res) => {
      }
     })
   });
+
+exports.grantPermission=catchAsyncErrors(async(req,res)=>{
+  const { Email_ID }=req.body;
+  try{
+      const verifyDoctor=await Doctor.findOne({Email_ID});
+      if(!verifyDoctor){
+        return res.status(404).json({success:false,message:"Doctor not found"});
+      }
+      verifyDoctor.isLaPermitted=true;
+      await verifyDoctor.save();
+  }catch(error){
+    console.error('Error during login:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
