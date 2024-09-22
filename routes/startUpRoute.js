@@ -3,7 +3,7 @@ const asyncMiddleware = require('../middleware/catchAsyncErrors');
 const {
 createStartUp,
 StartupLogin,
-Startup_Dashboard,
+Startup_Dashboard_Create,
 Startup_farmer_tab,
 Startup_docter_tab,
 StartupDashInfoRetrieval,
@@ -23,7 +23,7 @@ router.route("/startup-reg").post(asyncMiddleware(createStartUp));
 router.route("/startup-login").post(asyncMiddleware(StartupLogin)); 
 
 //DashBoard for Startup
-router.route("/startup-dashboard").post(asyncMiddleware(Startup_Dashboard));
+router.route("/startup-dash-post-fillapplication").post(asyncMiddleware( Startup_Dashboard_Create ));
 
 //dashboard for startup farmer
 router.route("/farmertab-in-startup").post(asyncMiddleware(Startup_farmer_tab)); 
