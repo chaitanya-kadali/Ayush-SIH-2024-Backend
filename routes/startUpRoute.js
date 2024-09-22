@@ -28,7 +28,7 @@ router.route("/startup-dash-post-fillapplication").post(asyncMiddleware( Startup
 //dashboard for startup farmer
 router.route("/farmertab-in-startup").post(asyncMiddleware(Startup_farmer_tab)); 
 
-//dashboard for startup farmer
+//dashboard for startup farmer 
 router.route("/startup-dash-retrieval").post(asyncMiddleware(StartupDashInfoRetrieval)); 
 
 //dashboard for startup doctor

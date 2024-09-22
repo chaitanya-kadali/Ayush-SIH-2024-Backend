@@ -20,7 +20,7 @@ router.route("/authority-login").post(asyncMiddleware(LicensingAuthorityLogin));
 //Dashboard for liscensingAuthority
 router.route("/licensingAuthority-dashboard").post(asyncMiddleware(LicensingAuthorityDashboard));
 
-//Dashboard for LA-Notificationpost
+//Dashboard for LA-Notificationpost 
 router.route("/LA-Notificationpost").post(asyncMiddleware(LANotificationpost));
 
 //Dashboard for LA-NotificationSendingStartups

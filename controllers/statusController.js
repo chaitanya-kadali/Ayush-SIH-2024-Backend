@@ -103,7 +103,7 @@ exports.isRejected = catchAsyncErrors(async (req, res) => {
 
     try {
         const statusList = await Status.find(
-            { isDrugInspectorRejected: false }, // Filter condition
+            { isDrugInspectorRejected: true }, // Filter condition
             { Email_ID: 1, _id: 0 } // Only return Email_ID, omit _id
         );
         // Check if any results were found
@@ -143,7 +143,7 @@ exports.isLicensed = catchAsyncErrors(async (req, res) => {
 exports.isNotifyEligible = catchAsyncErrors(async (req, res) => {
     const { Startup_Email } = req.body;
     try {
-        console.log("sttp  ");
+        console.log("is notify elgble  ",Startup_Email);
         const Startup_Exist = await LA_Notification.findOne({ Startup_Email });
         
         if (!Startup_Exist) {
