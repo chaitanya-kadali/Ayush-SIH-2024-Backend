@@ -98,7 +98,7 @@ exports.StartupLogin =catchAsyncErrors(async (req,res)=>{
   });
 
 //Dashboard for the start up
-exports.Startup_Dashboard = catchAsyncErrors(async (req, res) => {
+exports.Startup_Dashboard_Create = catchAsyncErrors(async (req, res) => {
 
   const { Email, PANno, GSTno, websiteAddress, certificateNo, CompanyDOI, IssuuingAuthority, IE_code, IE_DOI } = req.body;
 
@@ -234,12 +234,15 @@ exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
 
 exports.StartupDashInfoRetrieval = catchAsyncErrors(async(req,res)=>{
   const { Email_ID }=req.body;
+  const Email  = Email_ID; //in statupdash model schema email is as "Email"
   try{
-    const VerifyEmail=await StartupdashModel.findOne({Email_ID:Email_ID});
+    const VerifyEmail=await StartupdashModel.findOne({Email});
     if(!VerifyEmail){
-      return res.status(404).json({success:false,message:"Startup Dash Model Doesn\'t exist"});
+      console.log("Dash Model Doesn\'t exist",Email_ID);
+      return res.status(202).json({success:false,message:"Startup Dash Model Doesn\'t exist",data:[]});
     }
-    const StartupDetails=await StartupdashModel.find({Email_ID});
+    const StartupDetails=await StartupdashModel.find({Email});
+    console.log("Dash Model exist",StartupDetails);
     return res.status(201).json({success:true,message:"Startup Dash details",data:StartupDetails});
   }
   catch{
