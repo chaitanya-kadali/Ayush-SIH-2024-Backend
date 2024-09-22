@@ -214,18 +214,14 @@ exports.StartupFeedback_post = catchAsyncErrors(async (req, res) => {
 // Uploading Feedback from liscensingAuthority into Database
 exports.StartupFeedback_Get = catchAsyncErrors(async (req, res) => {
   const { Email } = req.body;
-  
   try {
+    console.log("220 ");
     // Find the startup by email
-    const StartUp = await StartupdashModel.findOne({ Email });
-
-    // Check if the startup exists
-    if (!StartUp) {
-      return res.status(404).json({ success: false, message: 'Startup not found' });
-    }
-
+    const StartUpdash = await StartupdashModel.findOne({ Email });
+    console.log("220 ", StartUpdash);
+    
     // Return a success response
-    res.status(200).json({ success: true, message: 'Startup found ', data: StartUp.feedback });
+    res.status(200).json({ success: true, message: 'Startup found ', data: StartUpdash.feedback });
   } catch (error) {
     console.error('Error during feedback update:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });

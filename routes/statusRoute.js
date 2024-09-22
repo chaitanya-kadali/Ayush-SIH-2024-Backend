@@ -17,7 +17,7 @@ makeItLicensed
 const router = express.Router();
 
 // --/isDrugInspectorAssigned-false
-router.route("/isDrugInspectorAssigned-false").get(asyncMiddleware(isNotAssigned)); 
+router.route("/isfilledapplication-false").get(asyncMiddleware(isNotAssigned)); 
 
 // --/isDrugInspectorAssigned-true
 router.route("/isDrugInspectorAssigned-true").get(asyncMiddleware(isAssigned)); 
