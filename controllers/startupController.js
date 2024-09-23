@@ -7,6 +7,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors"); // by defaul
 const {Startupschema}=require("../middleware/schemaValidator");  //validate Doctor schema 
 const Status = require("../models/applicationStatus");
 require('dotenv').config();
+const axios = require("axios");
 
 
 const jwt = require('jsonwebtoken');  //object to Generate JWT token
@@ -193,10 +194,10 @@ exports.StartupFeedback_post = catchAsyncErrors(async (req, res) => {
 
     console.log("Startup email",Email);
     const message = feedback;
-    // const response =await axios.post("http://localhost:5002/api/send-email",{ Email, message });
-    // if(!response.data.success){
-    //   console.log("eror : email is not sent");
-    // }
+    const response =await axios.post("http://localhost:5002/api/send-email",{ email:Email, message:feedback });
+    if(!response.data.success){
+      console.log("eror : email is not sent");
+    }
 
     StartUp.feedback.push(feedback);
 
@@ -298,6 +299,9 @@ exports.EditStartupDash = catchAsyncErrors(async (req, res) => {
       { new: true }
     );
 
+    const verifyEmail=await Status.findOne({Email_ID:email});
+        verifyEmail.FilledApplication=true;
+        await verifyEmail.save();
     // Return the updated document along with the changed attributes
     res.status(200).json({
       success: true,

@@ -86,7 +86,8 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
     return res.status(403).json({ success: false, error: 'Invalid Email_ID or password.' });
     }
     if(!DruginspectorDetails.isLaPermitted){
-      return res.status(201).json({success:false,mesasge:"you are not authorised yet"});
+      console.log("you are not authorised yet");
+      return res.status(201).json({success:false,message:"you are not authorised by license authrty yet"});
     }
     const token = jwt.sign(
       { id: DruginspectorDetails._id, Email_ID: DruginspectorDetails.Email_ID },  // Payload data
@@ -136,10 +137,29 @@ exports.createDruginspector = catchAsyncErrors(async (req, res) => {
         if(!verifyDruginspector){
           return res.status(404).json({success:false,message:"Doctor not found"});
         }
-        Druginspector.isLaPermitted=true;
-        await Druginspector.save();
+        verifyDruginspector.isLaPermitted=true;
+        await verifyDruginspector.save();
+        res.status(200).json({ success: true});
     }catch(error){
-      console.error('Error during login:', error);
+      console.error('Error during grant permit:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
     }
   });
+
+
+  exports.pendinggrantPermission = catchAsyncErrors(async (req, res) => {
+    try {
+      const drugsList = await Druginspector.find( { isLaPermitted:false } );
+      if (drugsList.length === 0) {
+          return res.status(200).json({ success: true, datad: [], message: 'No emails found' });
+      }                 //200           // true is the only thing to do . empty emails is acceptable 
+
+      // Return the list of emails
+      res.status(200).json({ success: true, datad: drugsList, message: 'Success' });
+
+  } catch (error) {
+      console.error('Error during fetching startups:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+  });
+

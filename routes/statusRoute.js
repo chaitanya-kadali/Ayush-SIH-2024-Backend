@@ -6,12 +6,14 @@ isNotAssigned,
 isNotifyEligible,
 isAccepted,
 isRejected,
+isLARejected,
 isLicensed,
 statusTrackpad,
 makeItAssigned,
 makeItAccepted,
 makeItRejected,
-makeItLicensed
+makeItLicensed,
+makeItLARejected
 } = require("../controllers/statusController");
 
 const router = express.Router();
@@ -28,6 +30,8 @@ router.route("/isDrugInspectorAccepted-true").get(asyncMiddleware(isAccepted));
 // -- / isDrugInspectorRejected-true
 router.route("/isDrugInspectorRejected-true").get(asyncMiddleware(isRejected)); 
 
+router.route("/isLArejected").get(asyncMiddleware(isLARejected)); 
+
 // -- /isLicensed-true
 router.route("/isLicensed-true").get(asyncMiddleware(isLicensed)); 
 
@@ -37,6 +41,8 @@ router.route("/is-notify-eligible").post(asyncMiddleware(isNotifyEligible));
 router.route("/status-trackpad").post(asyncMiddleware(statusTrackpad)); 
 
 router.route("/make-it-assign").post(asyncMiddleware(makeItAssigned)); 
+
+router.route("/make-it-LArejected").post(asyncMiddleware(makeItLARejected)); 
 
 router.route("/make-it-accepted").post(asyncMiddleware(makeItAccepted));
 
