@@ -85,12 +85,18 @@ app.use("/api",Pdfmanagement);
 app.use(express.static('public'));
 // to display (serve) by default html content ( to make sure that the server is running when HOSTED)
 app.get(['/', '/api'], (req, res) => {
+  try{
   res.sendFile(__dirname + '/index.html');
+  }catch(e){
+    console.log("erorrrrr", e);
+  }
 });
 
 
-app.listen(process.env.PORT , () =>{ 
-console.log(`Server is running on port ${process.env.PORT}`);
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 module.exports = app;
