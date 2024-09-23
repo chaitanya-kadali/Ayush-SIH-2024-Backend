@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-
+try{
 // MongoDB Atlas Connection
 const mongoUri = "mongodb+srv://aayushdb:Ayush123@cluster0.dbb2fbo.mongodb.net/aayushdb?retryWrites=true&w=majority&appName=Cluster0;"
 
@@ -41,7 +41,9 @@ mongoose.connect(mongoUri)
 });
 
 // mongoose.connect('mongodb://localhost:27017/aayushdb');
-
+}catch(e){
+  console.log("cloud connecting error");
+}
 
 // importings of persons
   const farmer = require("./routes/farmerRoute");
@@ -93,7 +95,7 @@ app.get(['/', '/api'], (req, res) => {
 });
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5002;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

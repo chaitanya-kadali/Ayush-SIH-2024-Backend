@@ -44,11 +44,9 @@ exports.createStartUp= catchAsyncErrors( async (req, res) => {
     // Create new user instance with hashed password
     const newStatus= new Status({
       Email_ID:Email_ID,
-      FilledApplication:false,
-      FilledAplicationAccepted:false,
-      isDrugInspectorAssigned:false,
-      isDrugInspectorAccepted:false,
-      isLicensed:false
+    FilledApplication : false,	AplicationAccepted : false, 	ApplicationRejected :false,	
+  isDrugInspectorAssigned: false,	isDrugInspectorAccepted : false, 	isDrugInspectorRejected : false,
+	isLicensed: false
     });
 
     const NewstartUp = new Startup({Email_ID,password:hashedPassword,companyName,address ,city,pinCode,
