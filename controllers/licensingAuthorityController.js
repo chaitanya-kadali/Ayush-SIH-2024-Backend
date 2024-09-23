@@ -232,24 +232,21 @@ exports.LANotificationSendingStartups = catchAsyncErrors(async (req, res) => {
 
 // Function to get the notification based on LA_Email and Startup_Email
 exports.LA_NotificationGet = catchAsyncErrors(async (req, res) => {
-  const { LA_Email, Startup_Email } = req.body;
+  const { Startup_Email } = req.body;
 
   try {
     // Find the notification based on LA_Email and Startup_Email
-    const notification = await LA_Notification.findOne({
-      LA_Email: LA_Email,
-      Startup_Email: Startup_Email
-    });
+    const notification = await LA_Notification.find();
 
     if (!notification) {
-      return res.status(404).json({ success: false, error: 'Notification not found' });
+      return res.status(201).json({ success: true,message: 'Notification found successfully',NotificationData: []});
     }
 
     // Return the NotificationMsgData (notification) and the date
     res.status(200).json({
       success: true,
       message: 'Notification found successfully',
-      NotificationMsgData: notification.notification,  // The notification message
+      NotificationData: notification,  // The notification message
       date: notification.date  // The date when the notification was created
     });
 

@@ -4,7 +4,8 @@ const {
     createDruginspector,
     DruginspectorLogin,
     DruginspectorDashboard,
-    grantPermission
+    grantPermission,
+    pendinggrantPermission,
 } = require("../controllers/drugInspectorController");
 
 const router = express.Router();
@@ -20,5 +21,7 @@ router.route("/drugInspector-dashboard").post(asyncMiddleware(DruginspectorDashb
 
 //granting of permission
 router.route("/grant-permission-to-druginspector").post(asyncMiddleware(grantPermission));
+
+router.route("/pending-to-permision").get(asyncMiddleware(pendinggrantPermission));
 
 module.exports = router;
