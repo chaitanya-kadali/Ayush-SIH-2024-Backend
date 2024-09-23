@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
-const sendinblue = require('nodemailer-sendinblue-transport');
+// const sendinblue = require('nodemailer-sendinblue-transport');
+const sendinblue = require('nodemailer-brevo-transport');
 const express = require("express");
 require('dotenv').config(); 
 
