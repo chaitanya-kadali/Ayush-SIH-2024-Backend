@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
-// const sendinblue = require('nodemailer-sendinblue-transport');
-const sendinblue = require('nodemailer-brevo-transport');
+const sendinblue = require('nodemailer-sendinblue-transport');
+// const sendinblue = require('nodemailer-brevo-transport');
 const express = require("express");
 require('dotenv').config(); 
 
@@ -16,7 +16,7 @@ const sendEmailFunc = async (req, res) => {
         let mailOptions = {
             from: 'rockstarshankar0@gmail.com', // Sender address
             to: email, // Receiver address
-            subject: 'email by api Test Email from NodeMailer and Sendinblue', // Subject line
+            subject: 'The email from Ayush 2.0 SIH Team Code Commandoes', // Subject line
             text: message // Plain text body
         };
 
