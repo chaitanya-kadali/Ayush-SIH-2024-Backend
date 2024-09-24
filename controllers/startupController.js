@@ -198,7 +198,7 @@ exports.StartupFeedback_post = catchAsyncErrors(async (req, res) => {
     }
 
     StartUp.feedback.push(feedback);
-
+    console.log("201 : ",StartUp.feedback);
     // Save the updated startup to the database
     await StartUp.save(); 
 
@@ -237,7 +237,7 @@ exports.StartupDashInfoRetrieval = catchAsyncErrors(async(req,res)=>{
       return res.status(202).json({success:false,message:"Startup Dash Model Doesn\'t exist",data:[]});
     }
     const StartupDetails=await StartupdashModel.find({Email});
-    console.log("Dash Model exist",StartupDetails);
+    // console.log("Dash Model exist",StartupDetails);
     return res.status(201).json({success:true,message:"Startup Dash details",data:StartupDetails});
   }
   catch{
