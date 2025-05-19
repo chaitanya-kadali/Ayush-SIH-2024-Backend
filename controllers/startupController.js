@@ -192,7 +192,7 @@ exports.StartupFeedback_post = catchAsyncErrors(async (req, res) => {
 
     console.log("Startup email",Email);
     const message = feedback;
-    const response =await axios.post("http://localhost:5002/api/send-email",{ email:Email, message:feedback });
+    const response =await axios.post("https://ayush-sih-backend.vercel.app/api/send-email",{ email:Email, message:feedback });
     if(!response.data.success){
       console.log("eror : email is not sent");
     }

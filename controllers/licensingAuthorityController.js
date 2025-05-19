@@ -170,7 +170,7 @@ exports.LANotificationpost = catchAsyncErrors(async (req, res) => {
 
     console.log("LA email",email);
     const message = NotificationMsgData;
-    const response =await axios.post("http://localhost:5002/api/send-email",{ email, message });
+    const response =await axios.post("https://ayush-sih-backend.vercel.app/api/send-email",{ email, message });
     if(!response.data.success){
       console.log("eror : email is not sent");
     }
